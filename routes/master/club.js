@@ -1,8 +1,8 @@
 import express from 'express';
-import master from './master';
+import controller from '../../controllers/master/club';
 
 const router = express.Router();
 
-router.use('/master', master);
+router.get('/', controller.list);
 
 export default router;

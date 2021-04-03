@@ -4,7 +4,7 @@ import express from 'express';
 import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
-import indexRouter from './routes';
+import routes from './routes';
 
 const app = express();
 const { PORT } = process.env;
@@ -35,8 +35,13 @@ app.use(
     credentials: true,
   }),
 );
+// 서버는 '/' 가 필요없지만 임시 페이지 작성함
+app.get('/', (req, res) => {
+  res.status(200).send('Hello Carrots!');
+});
 
-app.use('/', indexRouter);
+app.use('/api', routes);
+
 const port = PORT || 5000;
 app.listen(port, () => {
   console.log(`Server start at http://localhost:${port}`);

@@ -1,8 +1,5 @@
 import express from 'express';
-import master from './master';
-
+// 여기다 master 참고 하셔서 sub route 작성하시면 됩니다.
 const router = express.Router();
-
-router.use('/master', master);
 
 export default router;
