@@ -13,7 +13,13 @@ sequelize.sync({force: false})
   .then(() => {
     console.log('데이터베이스 연결 성공');
   }).catch((err) => {
-    console.error(err);
+    if (err.original.sqlState === '42000') {
+      console.log('데이터 베이스가 없습니다.')
+      console.log('npm run create_db')
+      console.log('를 입력해주세요.')
+    } else {
+      console.error(err);
+    }
 })
 
 app.use(morgan('dev'));

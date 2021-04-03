@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index"
+    "start": "nodemon index",
+    "drop_db": "sequelize db:drop",
+    "create_db": "sequelize db:create"
   },
   "repository": {
     "type": "git",
