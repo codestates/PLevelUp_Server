@@ -1,13 +1,19 @@
-const Sequelize= require('sequelize');
-const Master= require('./master');
-const User= require('./user');
-const Club= require('./club');
-const PaymentLog= require('./paymentLog');
+import Sequelize from 'sequelize';
+import Master from './master';
+import User from './user';
+import Club from './club';
+import PaymentLog from './paymentLog';
+import config from '../config/config.js';
 
 const env = process.env.NODE_ENV || 'development';
-const config = require('../config/config.js')[env];
+const configEnv = config[env];
+export const sequelize = new Sequelize(
+  configEnv.database,
+  configEnv.user,
+  configEnv.password,
+  configEnv,
+);
 const db = {};
-const sequelize = new Sequelize(config.database, config.user, config.password, config);
 
 db.sequelize = sequelize;
 db.Master = Master;
@@ -25,4 +31,4 @@ User.associate(db);
 Club.associate(db);
 PaymentLog.associate(db);
 
-module.exports = db;
+export default db;

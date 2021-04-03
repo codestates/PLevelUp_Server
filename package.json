@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index",
-    "drop_db": "sequelize db:drop",
-    "create_db": "sequelize db:create"
+    "start": "node index",
+    "start:dev": "nodemon --watch . -r esm index.js",
+    "drop:db": "sequelize db:drop",
+    "create:db": "sequelize db:create"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "morgan": "^1.10.0",
