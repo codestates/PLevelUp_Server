@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Outwater/PLevelUp_Server.git"
+    "url": "git+https://github.com/codestates/PLevelUp_Server.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Outwater/PLevelUp_Server/issues"
+    "url": "https://github.com/codestates/PLevelUp_Server/issues"
   },
-  "homepage": "https://github.com/Outwater/PLevelUp_Server#readme",
+  "homepage": "https://github.com/codestates/PLevelUp_Server#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",
