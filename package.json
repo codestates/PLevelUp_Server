@@ -4,29 +4,32 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index",
-    "drop_db": "sequelize db:drop",
-    "create_db": "sequelize db:create"
+    "start": "node index",
+    "start:dev": "nodemon --watch . -r esm index.js",
+    "drop:db": "sequelize db:drop",
+    "create:db": "sequelize db:create"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Outwater/PLevelUp_Server.git"
+    "url": "git+https://github.com/codestates/PLevelUp_Server.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Outwater/PLevelUp_Server/issues"
+    "url": "https://github.com/codestates/PLevelUp_Server/issues"
   },
-  "homepage": "https://github.com/Outwater/PLevelUp_Server#readme",
+  "homepage": "https://github.com/codestates/PLevelUp_Server#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
+    "prettier": "^2.2.1",
     "sequelize": "^6.6.2",
     "sequelize-cli": "^6.2.0"
   },
