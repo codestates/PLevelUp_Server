@@ -33,4 +33,14 @@ export default class Master extends Sequelize.Model {
   static associate(db) {
     db.Master.hasMany(db.Club);
   }
+
+  static findByEmail(email) {
+    return this.findOne({ where: { email: email } });
+  }
+
+  serialize() {
+    const data = this.toJSON();
+    delete data.password;
+    return data;
+  }
 }

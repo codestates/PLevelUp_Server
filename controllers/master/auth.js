@@ -1,6 +1,40 @@
+import Joi from 'joi';
+import Master from '../../models/master';
+import bcrypt from 'bcrypt';
+
 export default {
-  signUp: (req, res) => {
-    res.status(200).send('this is master signUp');
+  signUp: async (req, res) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      username: Joi.string().min(2).max(15).required(),
+      password: Joi.string().min(8).required(),
+    });
+
+    const result = schema.validate(req.body);
+    if (result.error) {
+      res.status(400).send(result.error.details[0].message);
+      return;
+    }
+    const { email, username, password } = req.body;
+    try {
+      const exists = await Master.findByEmail(email);
+      if (exists) {
+        res.sendStatus(409);
+        return;
+      }
+      const hashPassword = await bcrypt.hash(password, 10);
+      await Master.create({
+        email: email,
+        username: username,
+        password: hashPassword,
+      });
+
+      const master = await Master.findByEmail(email);
+      const data = master.serialize();
+      res.status(200).send(data);
+    } catch (e) {
+      res.status(500).send(e.toString());
+    }
   },
   login: (req, res) => {
     res.status(200).send('this is master login');
