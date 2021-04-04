@@ -40,8 +40,8 @@ export default class Master extends Sequelize.Model {
     return this.findOne({ where: { email: email } });
   }
 
-  checkPassword(password) {
-    return bcrypt.compare(password, this.password);
+  async checkPassword(password) {
+    return await bcrypt.compare(password, this.password);
   }
 
   serialize() {
@@ -49,8 +49,8 @@ export default class Master extends Sequelize.Model {
     delete data.password;
     return data;
   }
-  async generateToken() {
-    return await jwt.sign(
+   generateToken() {
+    return jwt.sign(
       {
         _id: this.id,
         email: this.email,

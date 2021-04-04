@@ -31,7 +31,7 @@ export default {
 
       const master = await Master.findByEmail(email);
       const data = master.serialize();
-      const token = await master.generateToken();
+      const token = master.generateToken();
       res
         .status(200)
         .cookie('master_access_token', token, {
@@ -47,18 +47,21 @@ export default {
     const { email, password } = req.body;
     if (!email || !password) {
       res.sendStatus(401);
+      return;
     }
     const master = await Master.findByEmail(email);
 
     if (!master) {
       res.sendStatus(401);
+      return;
     }
-    const valid = master.checkPassword(password);
+    const valid = await master.checkPassword(password);
     if (!valid) {
       res.sendStatus(401);
+      return;
     }
     const data = master.serialize();
-    const token = await master.generateToken();
+    const token = master.generateToken();
     res
       .status(200)
       .cookie('master_access_token', token, {
@@ -68,9 +71,14 @@ export default {
       .send(data);
   },
   isLogin: (req, res) => {
-    res.status(200).send('this is master isLogin');
+    const { master } = req.body;
+    if (!master) {
+      res.sendStatus(401);
+      return;
+    }
+    res.status(200).send(master);
   },
   logout: (req, res) => {
-    res.status(200).send('this is master logout');
+    res.clearCookie('master_access_token').sendStatus(204);
   },
 };
