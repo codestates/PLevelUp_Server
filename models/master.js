@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export default class Master extends Sequelize.Model {
   static init(sequelize) {
@@ -47,5 +48,17 @@ export default class Master extends Sequelize.Model {
     const data = this.toJSON();
     delete data.password;
     return data;
+  }
+  async generateToken() {
+    return await jwt.sign(
+      {
+        _id: this.id,
+        email: this.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      },
+    );
   }
 }

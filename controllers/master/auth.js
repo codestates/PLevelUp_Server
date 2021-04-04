@@ -31,7 +31,14 @@ export default {
 
       const master = await Master.findByEmail(email);
       const data = master.serialize();
-      res.status(200).send(data);
+      const token = await master.generateToken();
+      res
+        .status(200)
+        .cookie('master_access_token', token, {
+          maxAge: 1000 * 60 * 60 * 24 * 1,
+          httpOnly: true,
+        })
+        .send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
@@ -51,7 +58,14 @@ export default {
       res.sendStatus(401);
     }
     const data = master.serialize();
-    res.status(200).send(data);
+    const token = await master.generateToken();
+    res
+      .status(200)
+      .cookie('master_access_token', token, {
+        maxAge: 1000 * 60 * 60 * 24 * 1,
+        httpOnly: true,
+      })
+      .send(data);
   },
   isLogin: (req, res) => {
     res.status(200).send('this is master isLogin');
