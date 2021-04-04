@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index",
     "start:dev": "nodemon --watch . -r esm index.js",
-    "drop:db": "sequelize db:drop",
-    "create:db": "sequelize db:create"
+    "db:drop": "sequelize db:drop",
+    "db:create": "sequelize db:create"
   },
   "repository": {
     "type": "git",
