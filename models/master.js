@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import bcrypt from 'bcrypt';
 
 export default class Master extends Sequelize.Model {
   static init(sequelize) {
@@ -36,6 +37,10 @@ export default class Master extends Sequelize.Model {
 
   static findByEmail(email) {
     return this.findOne({ where: { email: email } });
+  }
+
+  checkPassword(password) {
+    return bcrypt.compare(password, this.password);
   }
 
   serialize() {

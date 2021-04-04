@@ -36,8 +36,22 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  login: (req, res) => {
-    res.status(200).send('this is master login');
+  login: async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.sendStatus(401);
+    }
+    const master = await Master.findByEmail(email);
+
+    if (!master) {
+      res.sendStatus(401);
+    }
+    const valid = master.checkPassword(password);
+    if (!valid) {
+      res.sendStatus(401);
+    }
+    const data = master.serialize();
+    res.status(200).send(data);
   },
   isLogin: (req, res) => {
     res.status(200).send('this is master isLogin');
