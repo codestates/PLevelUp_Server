@@ -19,7 +19,7 @@ export default {
     if (!authorization) {
       return res
         .status(401)
-        .json({ data: null, message: 'you have not authorization' });
+        .json({ data: null, message: 'Authorization error' });
     }
     const accessToken = authorization.split(' ')[1];
 
@@ -29,7 +29,7 @@ export default {
       // return null if invalid token
       return res
         .status(401)
-        .json({ data: null, message: 'invalid access token' });
+        .json({ data: null, message: 'Invalid accesstoken error' });
     }
   },
 };
