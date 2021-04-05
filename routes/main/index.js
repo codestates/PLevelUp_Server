@@ -1,5 +1,7 @@
 import express from 'express';
-// 여기다 master 참고 하셔서 sub route 작성하시면 됩니다.
+import auth from './auth';
+
 const router = express.Router();
 
+router.use('/auth', auth);
 export default router;
