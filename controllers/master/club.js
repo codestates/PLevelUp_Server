@@ -1,6 +1,15 @@
 import Club from '../../models/club';
 import Joi from 'joi';
 
+export const checkClubsId = async (req, res, next) => {
+  const { id } = req.params;
+  const exists = await Club.count({ where: { id: id } });
+  if (exists === 0) {
+    res.sendStatus(400);
+    return;
+  }
+  return next();
+};
 export default {
   write: async (req, res) => {
     const schema = Joi.object().keys({
@@ -19,8 +28,6 @@ export default {
     if (result.error) {
       res.status(400).send(result.error.details[0].message);
       return;
-    } else {
-      console.log(result);
     }
     const {
       title,
@@ -89,16 +96,16 @@ export default {
       await Club.update(req.body, {
         where: {
           id: id,
-        }
-      })
-      const club = await Club.findOne({ where: { id: id } })
+        },
+      });
+      const club = await Club.findOne({ where: { id: id } });
       if (!club) {
-        res.sendStatus(404)
+        res.sendStatus(404);
         return;
       }
       res.status(200).send(club);
     } catch (e) {
-      res.status(500).send(e.toString())
+      res.status(500).send(e.toString());
     }
   },
 };

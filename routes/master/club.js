@@ -1,12 +1,12 @@
 import express from 'express';
-import controller from '../../controllers/master/club';
+import controller, { checkClubsId } from '../../controllers/master/club';
 
 const router = express.Router();
 
 router.get('/', controller.list);
 router.post('/', controller.write);
-router.get('/:id', controller.read);
-router.delete('/:id', controller.remove);
-router.patch('/:id', controller.update);
+router.get('/:id', checkClubsId, controller.read);
+router.delete('/:id', checkClubsId, controller.remove);
+router.patch('/:id', checkClubsId, controller.update);
 
 export default router;
