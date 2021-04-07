@@ -4,10 +4,10 @@ import bcrypt from 'bcrypt';
 
 export default {
   signUp: async (req, res) => {
-    const schema = Joi.object({
+    const schema = Joi.object().keys({
       email: Joi.string().email().required(),
       username: Joi.string().min(2).max(15).required(),
-      password: Joi.string().min(8).required(),
+      password: Joi.string().min(6).required(),
     });
 
     const result = schema.validate(req.body);
@@ -22,11 +22,11 @@ export default {
         res.sendStatus(409);
         return;
       }
-      const hashPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
       await Master.create({
         email: email,
         username: username,
-        password: hashPassword,
+        password: hashedPassword,
       });
 
       const master = await Master.findByEmail(email);
@@ -49,29 +49,33 @@ export default {
       res.sendStatus(401);
       return;
     }
-    const master = await Master.findByEmail(email);
+    try {
+      const master = await Master.findByEmail(email);
 
-    if (!master) {
-      res.sendStatus(401);
-      return;
+      if (!master) {
+        res.sendStatus(401);
+        return;
+      }
+      const valid = await master.checkPassword(password);
+      if (!valid) {
+        res.sendStatus(401);
+        return;
+      }
+      const data = master.serialize();
+      const token = master.generateToken();
+      res
+        .status(200)
+        .cookie('master_access_token', token, {
+          maxAge: 1000 * 60 * 60 * 24 * 1,
+          httpOnly: true,
+        })
+        .send(data);
+    } catch (e) {
+      res.status(500).send(e.toString());
     }
-    const valid = await master.checkPassword(password);
-    if (!valid) {
-      res.sendStatus(401);
-      return;
-    }
-    const data = master.serialize();
-    const token = master.generateToken();
-    res
-      .status(200)
-      .cookie('master_access_token', token, {
-        maxAge: 1000 * 60 * 60 * 24 * 1,
-        httpOnly: true,
-      })
-      .send(data);
   },
   isLogin: (req, res) => {
-    const { master } = req.body;
+    const { master } = res;
     if (!master) {
       res.sendStatus(401);
       return;

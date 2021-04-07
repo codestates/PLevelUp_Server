@@ -49,7 +49,8 @@ export default class Master extends Sequelize.Model {
     delete data.password;
     return data;
   }
-   generateToken() {
+
+  generateToken() {
     return jwt.sign(
       {
         _id: this.id,
