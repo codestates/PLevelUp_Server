@@ -8,12 +8,12 @@ module.exports = class PaymentLog extends Sequelize.Model {
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
-          defaultValue: Sequelize.fn('NOW'),
+          defaultValue: Sequelize.NOW,
         },
       },
       {
         sequelize,
-        timestamps: true,
+        timestamps: false,
         underscored: false,
         modelName: 'PaymentLog',
         tableName: 'paymentLogs',

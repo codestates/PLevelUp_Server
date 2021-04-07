@@ -1,13 +1,14 @@
 require('dotenv').config();
 
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
 
 const app = express();
-const { PORT } = process.env;
+const { PORT, COOKIE_SECRET } = process.env;
 
 sequelize
   .sync({ force: false })
@@ -27,6 +28,7 @@ sequelize
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser(COOKIE_SECRET));
 
 app.use(
   cors({

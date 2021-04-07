@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index",
     "start:dev": "nodemon --watch . -r esm index.js",
-    "drop:db": "sequelize db:drop",
-    "create:db": "sequelize db:create"
+    "db:drop": "sequelize db:drop",
+    "db:create": "sequelize db:create"
   },
   "repository": {
     "type": "git",
@@ -21,12 +21,14 @@
   "homepage": "https://github.com/codestates/PLevelUp_Server#readme",
   "dependencies": {
     "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",

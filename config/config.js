@@ -1,17 +1,30 @@
 require('dotenv').config();
 
 module.exports = {
-  development : {
+  development: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: "p_level_up",
+    database: 'p_level_up',
     host: process.env.DB_HOST,
-    dialect: "mysql",
-  },production : {
+    dialect: 'mysql',
+    dialectOptions: {
+      useUTC: true,
+      dateStrings: true,
+      typeCast: true,
+    },
+    timezone: '+09:00',
+  },
+  production: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: "p_level_up",
+    database: 'p_level_up',
     host: process.env.DB_HOST,
-    dialect: "mysql",
-  }
-}
+    dialect: 'mysql',
+    dialectOptions: {
+      useUTC: true,
+      dateStrings: true,
+      typeCast: true,
+    },
+    timezone: '+09:00',
+  },
+};
