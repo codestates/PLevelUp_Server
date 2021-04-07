@@ -1,5 +1,7 @@
 export default {
-  list: (req, res) => {
-    res.status(200).send('this is clubs');
-  },
+  write: async (req, res) => {},
+  list: (req, res) => {},
+  read: (req, res) => {},
+  remove: (req, res) => {},
+  update: (req, res) => {},
 };
