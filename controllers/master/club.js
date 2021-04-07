@@ -57,11 +57,23 @@ export default {
     try {
       const clubs = await Club.findAll();
       res.status(200).send(clubs);
-    }catch(e){
+    } catch (e) {
       res.status(500).send(e.toString());
     }
   },
-  read: (req, res) => {},
+  read: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const club = await Club.findOne({ where: { id: id } });
+      if (!club) {
+        res.sendStatus(404);
+        return;
+      }
+      res.status(200).send(club);
+    } catch (e) {
+      res.status(500).send(e.toString());
+    }
+  },
   remove: (req, res) => {},
   update: (req, res) => {},
 };
