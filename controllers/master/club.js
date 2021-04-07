@@ -53,7 +53,14 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  list: (req, res) => {},
+  list: async (req, res) => {
+    try {
+      const clubs = await Club.findAll();
+      res.status(200).send(clubs);
+    }catch(e){
+      res.status(500).send(e.toString());
+    }
+  },
   read: (req, res) => {},
   remove: (req, res) => {},
   update: (req, res) => {},
