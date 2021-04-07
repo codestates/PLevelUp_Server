@@ -92,6 +92,23 @@ export default {
   },
   update: async (req, res) => {
     const { id } = req.params;
+    const schema = Joi.object().keys({
+      title: Joi.string(),
+      summary: Joi.string(),
+      place: Joi.string(),
+      price: Joi.number(),
+      description: Joi.string(),
+      topic: Joi.string(),
+      startDate: Joi.date(),
+      endDate: Joi.date(),
+      day: Joi.string(),
+      limitUserNumber: Joi.number(),
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+      res.status(400).send(result.error.details[0].message);
+      return;
+    }
     try {
       await Club.update(req.body, {
         where: {
