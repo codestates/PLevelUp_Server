@@ -74,6 +74,14 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  remove: (req, res) => {},
+  remove: async (req, res) => {
+    const { id } = req.params;
+    try {
+      await Club.destroy({ where: { id: id } });
+      res.sendStatus(204);
+    } catch (e) {
+      res.status(500).send(e.toString());
+    }
+  },
   update: (req, res) => {},
 };
