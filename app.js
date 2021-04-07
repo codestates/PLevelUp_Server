@@ -6,6 +6,8 @@ import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
 
+import jwtMiddleware from './lib/jwtMiddleware';
+import cookieParser from 'cookie-parser';
 const app = express();
 const { PORT } = process.env;
 
@@ -35,11 +37,13 @@ app.use(
     credentials: true,
   }),
 );
+app.use(cookieParser());
+app.use(jwtMiddleware);
+
 // 서버는 '/' 가 필요없지만 임시 페이지 작성함
 app.get('/', (req, res) => {
   res.status(200).send('Hello Carrots!');
 });
-
 app.use('/api', routes);
 
 const port = PORT || 5000;
