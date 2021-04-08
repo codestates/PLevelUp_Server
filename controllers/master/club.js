@@ -61,8 +61,17 @@ export default {
     }
   },
   list: async (req, res) => {
+    const page = parseInt(req.query.page || '1', 10);
+    if (page < 1) {
+      res.sendStatus(400);
+      return;
+    }
     try {
-      const clubs = await Club.findAll({ limit: 20, order: [['id', 'DESC']] });
+      const clubs = await Club.findAll({
+        limit: 20,
+        order: [['id', 'DESC']],
+        offset: (page - 1) * 10,
+      });
       res.status(200).send(clubs);
     } catch (e) {
       res.status(500).send(e.toString());
