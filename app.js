@@ -6,6 +6,7 @@ import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
+//import createFakeClub from './createFakeClub';
 
 const app = express();
 const { PORT, COOKIE_SECRET } = process.env;
@@ -14,6 +15,7 @@ sequelize
   .sync({ force: false })
   .then(() => {
     console.log('데이터베이스 연결 성공');
+    //createFakeClub().then(_=>console.log('club 테스트 테이터 추가 완료'))
   })
   .catch(err => {
     if (err.original.sqlState === '42000') {
