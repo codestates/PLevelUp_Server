@@ -61,6 +61,7 @@ export default {
     }
   },
   list: async (req, res) => {
+    const perPage = 20;
     const page = parseInt(req.query.page || '1', 10);
     if (page < 1) {
       res.sendStatus(400);
@@ -68,10 +69,12 @@ export default {
     }
     try {
       const clubs = await Club.findAll({
-        limit: 20,
+        limit: perPage,
         order: [['id', 'DESC']],
         offset: (page - 1) * 10,
       });
+      const clubsCount = await Club.count();
+      res.set('last-page', Math.ceil(clubsCount / perPage));
       res.status(200).send(clubs);
     } catch (e) {
       res.status(500).send(e.toString());
