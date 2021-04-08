@@ -62,7 +62,7 @@ export default {
   },
   list: async (req, res) => {
     try {
-      const clubs = await Club.findAll({ order: [['id', 'DESC']] });
+      const clubs = await Club.findAll({ limit: 20, order: [['id', 'DESC']] });
       res.status(200).send(clubs);
     } catch (e) {
       res.status(500).send(e.toString());
