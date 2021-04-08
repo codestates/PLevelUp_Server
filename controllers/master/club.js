@@ -1,14 +1,24 @@
 import Club from '../../models/club';
 import Joi from 'joi';
 
-export const checkClubsId = async (req, res, next) => {
+export const getClubsById = async (req, res, next) => {
   const { id } = req.params;
   const exists = await Club.count({ where: { id: id } });
   if (exists === 0) {
     res.sendStatus(400);
     return;
   }
-  return next();
+  try {
+    const club = await Club.findOne({ where: { id: id } });
+    if (!club) {
+      club.status = 404;
+      return;
+    }
+    res.masterClub = club;
+    return next();
+  } catch (e) {
+    res.status(500).send(e.toString());
+  }
 };
 const clubsListEllipsis = (text, limit) =>
   text.length < limit ? text : `${text.slice(0, limit)}...`;
@@ -56,7 +66,7 @@ export default {
         endDate: endDate,
         day: day,
         limitUserNumber: limitUserNumber,
-        MasterId:res.master._id,
+        MasterId: res.master._id,
       });
       res.status(200).send(club);
     } catch (e) {
@@ -78,31 +88,23 @@ export default {
       });
       const clubsCount = await Club.count();
       res.set('last-page', Math.ceil(clubsCount / perPage));
-      const data = clubs.map(club=>club.toJSON()).map(club=>{
-        return{
-          ...club,
-          summary:clubsListEllipsis(club.summary,50),
-          description:clubsListEllipsis(club.description,50),
-          topic:clubsListEllipsis((club.topic,50))
-        }
-      })
+      const data = clubs
+        .map(club => club.toJSON())
+        .map(club => {
+          return {
+            ...club,
+            summary: clubsListEllipsis(club.summary, 50),
+            description: clubsListEllipsis(club.description, 50),
+            topic: clubsListEllipsis((club.topic, 50)),
+          };
+        });
       res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
   },
   read: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const club = await Club.findOne({ where: { id: id } });
-      if (!club) {
-        res.sendStatus(404);
-        return;
-      }
-      res.status(200).send(club);
-    } catch (e) {
-      res.status(500).send(e.toString());
-    }
+    res.status(200).send(res.masterClub);
   },
   remove: async (req, res) => {
     const { id } = req.params;
