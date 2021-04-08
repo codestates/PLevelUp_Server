@@ -20,6 +20,16 @@ export const getClubsById = async (req, res, next) => {
     res.status(500).send(e.toString());
   }
 };
+
+export const checkOwnClub = (req, res, next) => {
+  const master = res.master,
+    club = res.masterClub;
+  if (club.MasterId.toString() !== master._id) {
+    res.sendStatus(403);
+    return;
+  }
+  return next();
+};
 const clubsListEllipsis = (text, limit) =>
   text.length < limit ? text : `${text.slice(0, limit)}...`;
 export default {
