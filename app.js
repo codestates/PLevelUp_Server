@@ -9,7 +9,7 @@ import routes from './routes';
 //import {createDefaultMaster, createDummyClubData} from './createDummyData';
 
 import jwtMiddleware from './lib/jwtMiddleware';
-import cookieParser from 'cookie-parser';
+
 const app = express();
 const { PORT, COOKIE_SECRET } = process.env;
 
