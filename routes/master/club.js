@@ -1,15 +1,15 @@
 import express from 'express';
 import controller, {
   checkOwnClub,
-  getClubsById,
+  getClubById,
 } from '../../controllers/master/club';
 
 const router = express.Router();
 
 router.get('/', controller.list);
 router.post('/', controller.write);
-router.get('/:id', getClubsById, checkOwnClub, controller.read);
-router.delete('/:id', getClubsById, checkOwnClub, controller.remove);
-router.patch('/:id', getClubsById, checkOwnClub, controller.update);
+router.get('/:id', getClubById, checkOwnClub, controller.read);
+router.delete('/:id', getClubById, checkOwnClub, controller.remove);
+router.patch('/:id', getClubById, checkOwnClub, controller.update);
 
 export default router;

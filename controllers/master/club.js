@@ -1,7 +1,7 @@
 import Club from '../../models/club';
 import Joi from 'joi';
 
-export const getClubsById = async (req, res, next) => {
+export const getClubById = async (req, res, next) => {
   const { id } = req.params;
   const exists = await Club.count({ where: { id: id } });
   if (exists === 0) {
@@ -30,7 +30,7 @@ export const checkOwnClub = (req, res, next) => {
   }
   return next();
 };
-const clubsListEllipsis = (text, limit) =>
+const clubListEllipsis = (text, limit) =>
   text.length < limit ? text : `${text.slice(0, limit)}...`;
 export default {
   write: async (req, res) => {
@@ -103,9 +103,9 @@ export default {
         .map(club => {
           return {
             ...club,
-            summary: clubsListEllipsis(club.summary, 50),
-            description: clubsListEllipsis(club.description, 50),
-            topic: clubsListEllipsis((club.topic, 50)),
+            summary: clubListEllipsis(club.summary, 50),
+            description: clubListEllipsis(club.description, 50),
+            topic: clubListEllipsis((club.topic, 50)),
           };
         });
       res.status(200).send(data);
