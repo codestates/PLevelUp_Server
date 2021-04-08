@@ -56,6 +56,7 @@ export default {
         endDate: endDate,
         day: day,
         limitUserNumber: limitUserNumber,
+        MasterId:res.master._id,
       });
       res.status(200).send(club);
     } catch (e) {
