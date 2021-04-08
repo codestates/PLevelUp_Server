@@ -10,6 +10,8 @@ export const checkClubsId = async (req, res, next) => {
   }
   return next();
 };
+const clubsListEllipsis = (text, limit) =>
+  text.length < limit ? text : `${text.slice(0, limit)}...`;
 export default {
   write: async (req, res) => {
     const schema = Joi.object().keys({
@@ -75,7 +77,15 @@ export default {
       });
       const clubsCount = await Club.count();
       res.set('last-page', Math.ceil(clubsCount / perPage));
-      res.status(200).send(clubs);
+      const data = clubs.map(club=>club.toJSON()).map(club=>{
+        return{
+          ...club,
+          summary:clubsListEllipsis(club.summary,50),
+          description:clubsListEllipsis(club.description,50),
+          topic:clubsListEllipsis((club.topic,50))
+        }
+      })
+      res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
