@@ -5,11 +5,11 @@ export default class Club extends Sequelize.Model {
     return super.init(
       {
         title: { type: Sequelize.STRING, allowNull: false },
-        summary: { type: Sequelize.STRING, allowNull: false },
+        summary: { type: Sequelize.TEXT, allowNull: false },
         place: { type: Sequelize.STRING, allowNull: false },
         price: { type: Sequelize.INTEGER, allowNull: false },
-        description: { type: Sequelize.STRING, allowNull: false },
-        topic: { type: Sequelize.STRING, allowNull: false },
+        description: { type: Sequelize.TEXT, allowNull: false },
+        topic: { type: Sequelize.TEXT, allowNull: false },
         startDate: Sequelize.DATE,
         endDate: Sequelize.DATE,
         day: { type: Sequelize.STRING, allowNull: false },
@@ -17,13 +17,13 @@ export default class Club extends Sequelize.Model {
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
-          defaultValue: Sequelize.fn('NOW'),
+          defaultValue: Sequelize.NOW,
         },
         updatedAt: { type: Sequelize.DATE, allowNull: true },
       },
       {
         sequelize,
-        timestamps: true,
+        timestamps: false,
         underscored: false,
         modelName: 'Club',
         tableName: 'clubs',

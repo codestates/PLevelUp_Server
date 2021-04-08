@@ -1,20 +1,27 @@
 require('dotenv').config();
 
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
+//import {createDefaultMaster, createDummyClubData} from './createDummyData';
 
 import jwtMiddleware from './lib/jwtMiddleware';
 import cookieParser from 'cookie-parser';
 const app = express();
-const { PORT } = process.env;
+const { PORT, COOKIE_SECRET } = process.env;
 
 sequelize
   .sync({ force: false })
   .then(() => {
     console.log('데이터베이스 연결 성공');
+    /*    createDefaultMaster().then(masterId =>
+      createDummyClubData(masterId).then(_ =>
+        console.log('club테스트 데이터 추가 완료'),
+      ),
+    );*/
   })
   .catch(err => {
     if (err.original.sqlState === '42000') {
@@ -29,6 +36,7 @@ sequelize
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser(COOKIE_SECRET));
 
 app.use(
   cors({

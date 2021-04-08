@@ -13,13 +13,13 @@ export default class User extends Sequelize.Model {
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
-          defaultValue: Sequelize.fn('NOW'),
+          defaultValue: Sequelize.NOW,
         },
         updatedAt: { type: Sequelize.DATE, allowNull: true },
       },
       {
         sequelize,
-        timestamps: true,
+        timestamps: false,
         paranoid: false,
         underscored: false,
         modelName: 'User',
