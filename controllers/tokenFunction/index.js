@@ -5,23 +5,26 @@ import jwt from 'jsonwebtoken';
 export default {
   // access토큰 발급
   generateAccessToken: data => {
-    return jwt.sign(data, process.env.ACCESS_SECRET, { expiresIn: '1H' });
+    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1H' });
   },
 
   // access토큰 보내기
   sendAccessToken: (res, accessToken) => {
-    res.status(200).json({ accessToken, message: 'AccessToken is issued' });
+    res.cookie('access_token', accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+    });
+    res.status(200).json({ message: 'AccessToken is issued' });
   },
 
   // access토큰 있는지 확인해서 있으면 verify
-  isAuthorized: req => {
-    const authorization = req.headers['authorization'];
-    if (!authorization) {
+  isAuthorized: (req, res) => {
+    const accessToken = req.cookies.access_token;
+    if (!accessToken) {
       return res
         .status(401)
         .json({ data: null, message: 'Authorization error' });
     }
-    const accessToken = authorization.split(' ')[1];
 
     try {
       return jwt.verify(accessToken, process.env.ACCESS_SECRET);

@@ -1,4 +1,8 @@
 import Sequelize from 'sequelize';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default class User extends Sequelize.Model {
   static init(sequelize) {
@@ -37,5 +41,31 @@ export default class User extends Sequelize.Model {
       through: 'Apply',
       foreignKey: 'UserId',
     });
+  }
+
+  static findByEmail(email) {
+    return this.findOne({ where: { email: email } });
+  }
+
+  async checkPassword(password) {
+    return await bcrypt.compare(password, this.password);
+  }
+
+  serialize() {
+    const data = this.toJSON();
+    delete data.password;
+    return data;
+  }
+  generateToken() {
+    return jwt.sign(
+      {
+        _id: this.id,
+        email: this.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      },
+    );
   }
 }

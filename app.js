@@ -8,6 +8,8 @@ import cors from 'cors';
 import routes from './routes';
 //import {createDefaultMaster, createDummyClubData} from './createDummyData';
 
+import jwtMiddleware from './lib/jwtMiddleware';
+
 const app = express();
 const { PORT, COOKIE_SECRET } = process.env;
 
@@ -43,11 +45,13 @@ app.use(
     credentials: true,
   }),
 );
+app.use(cookieParser());
+app.use(jwtMiddleware);
+
 // 서버는 '/' 가 필요없지만 임시 페이지 작성함
 app.get('/', (req, res) => {
   res.status(200).send('Hello Carrots!');
 });
-
 app.use('/api', routes);
 
 const port = PORT || 5000;
