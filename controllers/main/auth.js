@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import bcrypt from 'bcrypt';
 import models from '../../models';
+import { Sequelize } from 'sequelize';
 const { User } = models;
 
 export default {
@@ -90,6 +91,28 @@ export default {
     try {
       res.clearCookie('access_token');
       res.status(204).json({ message: 'logout is successed' });
+    } catch (e) {
+      res.status.json(e.toString());
+    }
+  },
+
+  //비밀번호변경
+  update: async (req, res) => {
+    const { email, password, changePassword } = req.body;
+    if (!email | !password | !changePassword) {
+      return res.sendStatus(401);
+    }
+    try {
+      const user = await User.findByEmail(email);
+      if (!user) {
+        return res.sendStatus(401).json({ message: 'User does not exsit' });
+      }
+      await user.update({
+        password: changePassword,
+        updatedAt: Sequelize.fn('NOW'),
+      });
+      console.log(user);
+      res.status(200).json({ message: 'Password successfully changed' });
     } catch (e) {
       res.status.json(e.toString());
     }

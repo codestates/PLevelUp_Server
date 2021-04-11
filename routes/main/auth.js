@@ -7,4 +7,5 @@ router.post('/sign-up', controller.signup);
 router.post('/login', controller.login);
 router.get('/is-login', controller.isLogin);
 router.post('/logout', controller.logout);
+router.post('/update', controller.update);
 export default router;
