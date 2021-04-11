@@ -42,7 +42,7 @@ export default {
       description: Joi.string().required(),
       topic: Joi.string().required(),
       startDate: Joi.date().required(),
-      endData: Joi.date().required(),
+      endDate: Joi.date().required(),
       day: Joi.string().required(),
       limitUserNumber: Joi.number().required(),
     });
@@ -78,6 +78,7 @@ export default {
         limitUserNumber: limitUserNumber,
         MasterId: res.master._id,
       });
+      club.updatedAt = null
       res.status(200).send(club);
     } catch (e) {
       res.status(500).send(e.toString());
