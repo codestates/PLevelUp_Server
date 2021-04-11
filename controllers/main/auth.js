@@ -1,7 +1,6 @@
 import Joi from 'joi';
+import User from '../../models/user';
 import bcrypt from 'bcrypt';
-import models from '../../models';
-const { User } = models;
 
 export default {
   //회원가입
@@ -17,20 +16,20 @@ export default {
       res.status(400).send(result.error.details[0].message);
       return;
     }
+    const { email, username, password } = req.body;
     try {
-      const exists = await User.findOne({
-        where: { email: req.body.email },
-      });
+      // email 이미 존재하는지 확인
+      const exists = await User.findByEmail(email);
       if (exists) {
-        return res.status(409).send();
+        res.sendStatus(409); // Conflict
       }
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       await User.create({
-        email: req.body.email,
+        email: email,
+        username: username,
         password: hashedPassword,
-        username: req.body.username,
       });
-      const user = await User.findByEmail(req.body.email);
+      const user = await User.findByEmail(email);
       const data = user.serialize();
       const token = user.generateToken();
       res.cookie('access_token', token, {
@@ -67,31 +66,21 @@ export default {
       });
       res.status(200).send(data);
     } catch (e) {
-      res.status(500).json(e.toString());
+      res.status(500).send(e.toString());
     }
   },
   //로그인 상태확인
   isLogin: async (req, res) => {
     const { user } = res;
-    try {
-      if (!user) {
-        console.log('user not exist'); //* 삭제예정
-        // user가 없다면 jwt검증에서 유저가 없는 것 = 로그인 중 아님
-        return res.status(401).send();
-      }
-      console.log(user); //* 삭제예정
-      res.status(200).json(user);
-    } catch (e) {
-      res.status(400).json(e.toString());
+    if (!user) {
+      // 로그인 중 아님
+      res.sendStatus(401); // Unauthorized
+      return;
     }
+    res.status(200).json(user);
   },
   //로그아웃
   logout: async (req, res) => {
-    try {
-      res.clearCookie('access_token');
-      res.status(204).json({ message: 'logout is successed' });
-    } catch (e) {
-      res.status.json(e.toString());
-    }
+    res.clearCookie('access_token').sendStatus(204); // No Content
   },
 };
