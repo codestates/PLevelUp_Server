@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-module.exports = class PaymentLog extends Sequelize.Model {
+export default class PaymentLog extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
@@ -31,4 +31,4 @@ module.exports = class PaymentLog extends Sequelize.Model {
     db.PaymentLog.belongsTo(db.Club);
     db.PaymentLog.belongsTo(db.User);
   }
-};
+}
