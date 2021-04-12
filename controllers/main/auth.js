@@ -104,7 +104,7 @@ export default {
       console.log(user);
       res.status(200).json({ message: 'Password successfully changed' });
     } catch (e) {
-      res.status.json(e.toString());
+      res.status(500).json(e.toString());
     }
   },
 };
