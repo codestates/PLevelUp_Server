@@ -5,13 +5,15 @@ export const getClubById = async (req, res, next) => {
   const { id } = req.params;
   const exists = await Club.count({ where: { id: id } });
   if (exists === 0) {
-    res.sendStatus(400);
+    res.sendStatus(400); // Bad Request
     return;
   }
+
   try {
     const club = await Club.findOne({ where: { id: id } });
+
     if (!club) {
-      club.status = 404;
+      club.status = 404; // Not Found
       return;
     }
     res.masterClub = club;
@@ -22,16 +24,19 @@ export const getClubById = async (req, res, next) => {
 };
 
 export const checkOwnClub = (req, res, next) => {
+  // id 로 찾은 클럽이 로그인 중인 마스터가 작성한 클럽인지 확인
   const master = res.master,
     club = res.masterClub;
   if (club.MasterId.toString() !== master._id) {
-    res.sendStatus(403);
+    res.sendStatus(403); // Forbidden
     return;
   }
   return next();
 };
+
 const clubListEllipsis = (text, limit) =>
   text.length < limit ? text : `${text.slice(0, limit)}...`;
+
 export default {
   write: async (req, res) => {
     const schema = Joi.object().keys({
@@ -46,11 +51,13 @@ export default {
       day: Joi.string().required(),
       limitUserNumber: Joi.number().required(),
     });
+
     const result = schema.validate(req.body);
     if (result.error) {
       res.status(400).send(result.error.details[0].message);
       return;
     }
+
     const {
       title,
       summary,
@@ -78,14 +85,16 @@ export default {
         limitUserNumber: limitUserNumber,
         MasterId: res.master._id,
       });
-      club.updatedAt = null
+      club.updatedAt = null;
       res.status(200).send(club);
     } catch (e) {
       res.status(500).send(e.toString());
     }
   },
   list: async (req, res) => {
+    // 한페이지에 몇개씩 ?
     const perPage = 20;
+
     const page = parseInt(req.query.page || '1', 10);
     if (page < 1) {
       res.sendStatus(400);
@@ -98,6 +107,8 @@ export default {
         offset: (page - 1) * 10,
       });
       const clubsCount = await Club.count();
+
+      // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs
         .map(club => club.toJSON())
@@ -106,7 +117,7 @@ export default {
             ...club,
             summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, 50),
-            topic: clubListEllipsis((club.topic, 50)),
+            topic: clubListEllipsis(club.topic, 50),
           };
         });
       res.status(200).send(data);
@@ -121,13 +132,14 @@ export default {
     const { id } = req.params;
     try {
       await Club.destroy({ where: { id: id } });
-      res.sendStatus(204);
+      res.sendStatus(204); // No Content
     } catch (e) {
       res.status(500).send(e.toString());
     }
   },
   update: async (req, res) => {
     const { id } = req.params;
+
     const schema = Joi.object().keys({
       title: Joi.string(),
       summary: Joi.string(),
@@ -140,11 +152,13 @@ export default {
       day: Joi.string(),
       limitUserNumber: Joi.number(),
     });
+
     const result = schema.validate(req.body);
     if (result.error) {
       res.status(400).send(result.error.details[0].message);
       return;
     }
+
     try {
       await Club.update(req.body, {
         where: {
@@ -152,8 +166,9 @@ export default {
         },
       });
       const club = await Club.findOne({ where: { id: id } });
+
       if (!club) {
-        res.sendStatus(404);
+        res.sendStatus(404); // Not Found
         return;
       }
       res.status(200).send(club);

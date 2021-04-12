@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+require('dotenv').config();
 
 export default class Master extends Sequelize.Model {
   static init(sequelize) {
@@ -41,17 +42,20 @@ export default class Master extends Sequelize.Model {
   }
 
   async checkPassword(password) {
-    return await bcrypt.compare(password, this.password);
+    return await bcrypt.compare(password, this.password); // true / false
   }
 
   serialize() {
     const data = this.toJSON();
+    // 응답할 데이터에서 password 필드 제거
     delete data.password;
     return data;
   }
 
   generateToken() {
+    // 토큰 생성하여 리턴
     return jwt.sign(
+      // 첫 번째 파라미터에는 토큰 안에 집어넣고 싶은 데이터
       {
         _id: this.id,
         email: this.email,
