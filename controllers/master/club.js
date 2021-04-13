@@ -208,11 +208,19 @@ export default {
       res.status(400).send(result.error.details[0].message);
       return;
     }
+    const nextData = { ...req.body, updatedAt: new Date() }; // 객체를 복사하고
 
-    const nextData = { ...req.body }; // 객체를 복사하고
     // body 값이 주여졌으면 HTML 필터링
-    if (nextData.body) {
-      nextData.body = sanitizeHtml(nextData.body, sanitizeOption);
+    if (nextData.summary) {
+      nextData.summary = sanitizeHtml(nextData.summary, sanitizeOption);
+    }
+
+    if (nextData.description) {
+      nextData.description = sanitizeHtml(nextData.description, sanitizeOption);
+    }
+
+    if (nextData.topic) {
+      nextData.topic = sanitizeHtml(nextData.topic, sanitizeOption);
     }
 
     try {
