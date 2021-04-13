@@ -1,5 +1,31 @@
 import Club from '../../models/club';
 import Joi from 'joi';
+import Master from '../../models/master';
+import sanitizeHtml from 'sanitize-html';
+
+const sanitizeOption = {
+  allowedTags: [
+    'h1',
+    'h2',
+    'b',
+    'i',
+    'u',
+    's',
+    'p',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'a',
+    'img',
+  ],
+  allowedAttributes: {
+    a: ['href', 'name', 'target'],
+    img: ['src'],
+    li: ['class'],
+  },
+  allowedSchemes: ['data', 'http'],
+};
 
 export const getClubById = async (req, res, next) => {
   const { id } = req.params;
@@ -10,7 +36,15 @@ export const getClubById = async (req, res, next) => {
   }
 
   try {
-    const club = await Club.findOne({ where: { id: id } });
+    const club = await Club.findOne({
+      include: [
+        {
+          model: Master,
+          attributes: ['id', 'email', 'username'],
+        },
+      ],
+      where: { id: id },
+    });
 
     if (!club) {
       club.status = 404; // Not Found
@@ -27,15 +61,21 @@ export const checkOwnClub = (req, res, next) => {
   // id 로 찾은 클럽이 로그인 중인 마스터가 작성한 클럽인지 확인
   const master = res.master,
     club = res.masterClub;
-  if (club.MasterId.toString() !== master._id) {
+  if (club.MasterId.toString() !== master._id.toString()) {
     res.sendStatus(403); // Forbidden
     return;
   }
   return next();
 };
-
-const clubListEllipsis = (text, limit) =>
-  text.length < limit ? text : `${text.slice(0, limit)}...`;
+// html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
+const clubListEllipsis = (body, limit) => {
+  const filtered = sanitizeHtml(body, {
+    allowedTags: [],
+  });
+  return filtered.length < limit || limit === -1
+    ? filtered
+    : `${filtered.slice(0, limit)}...`;
+};
 
 export default {
   write: async (req, res) => {
@@ -77,7 +117,7 @@ export default {
         summary: summary,
         place: place,
         price: price,
-        description: description,
+        description: sanitizeHtml(description, sanitizeOption),
         topic: topic,
         startDate: startDate,
         endDate: endDate,
@@ -88,12 +128,15 @@ export default {
       club.updatedAt = null;
       res.status(200).send(club);
     } catch (e) {
+      console.log(e.toString());
       res.status(500).send(e.toString());
     }
   },
   list: async (req, res) => {
     // 한페이지에 몇개씩 ?
     const perPage = 20;
+
+    const { master } = res;
 
     const page = parseInt(req.query.page || '1', 10);
     if (page < 1) {
@@ -105,6 +148,13 @@ export default {
         limit: perPage,
         order: [['id', 'DESC']],
         offset: (page - 1) * 10,
+        where: { MasterId: master._id },
+        include: [
+          {
+            model: Master,
+            attributes: ['id', 'email', 'username'],
+          },
+        ],
       });
       const clubsCount = await Club.count();
 
@@ -116,7 +166,7 @@ export default {
           return {
             ...club,
             summary: clubListEllipsis(club.summary, 50),
-            description: clubListEllipsis(club.description, 50),
+            description: clubListEllipsis(club.description, -1),
             topic: clubListEllipsis(club.topic, 50),
           };
         });
@@ -159,8 +209,14 @@ export default {
       return;
     }
 
+    const nextData = { ...req.body }; // 객체를 복사하고
+    // body 값이 주여졌으면 HTML 필터링
+    if (nextData.body) {
+      nextData.body = sanitizeHtml(nextData.body, sanitizeOption);
+    }
+
     try {
-      await Club.update(req.body, {
+      await Club.update(nextData, {
         where: {
           id: id,
         },
