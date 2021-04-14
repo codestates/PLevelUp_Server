@@ -17,8 +17,6 @@ export default {
     // 한페이지에 몇개씩 ?
     const perPage = 20;
 
-    const { master } = res;
-
     const page = parseInt(req.query.page || '1', 10);
     if (page < 1) {
       res.sendStatus(400);
@@ -29,7 +27,6 @@ export default {
         limit: perPage,
         order: [['id', 'DESC']],
         offset: (page - 1) * 10,
-        where: { MasterId: master._id },
         include: [
           {
             model: Master,
