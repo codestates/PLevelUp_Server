@@ -90,6 +90,7 @@ export default {
       endDate: Joi.date().required(),
       day: Joi.string().required(),
       limitUserNumber: Joi.number().required(),
+      coverUrl: Joi.string().required(),
     });
 
     const result = schema.validate(req.body);
@@ -109,6 +110,7 @@ export default {
       endDate,
       day,
       limitUserNumber,
+      coverUrl,
     } = req.body;
 
     try {
@@ -124,6 +126,7 @@ export default {
         day: day,
         limitUserNumber: limitUserNumber,
         MasterId: res.master._id,
+        coverUrl: coverUrl,
       });
       club.updatedAt = null;
       res.status(200).send(club);
@@ -147,7 +150,7 @@ export default {
       const clubs = await Club.findAll({
         limit: perPage,
         order: [['id', 'DESC']],
-        offset: (page - 1) * 10,
+        offset: (page - 1) * perPage,
         where: { MasterId: master._id },
         include: [
           {
@@ -201,6 +204,7 @@ export default {
       endDate: Joi.date(),
       day: Joi.string(),
       limitUserNumber: Joi.number(),
+      coverUrl: Joi.string().required(),
     });
 
     const result = schema.validate(req.body);
