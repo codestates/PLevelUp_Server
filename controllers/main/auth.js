@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import User from '../../models/user';
 import bcrypt from 'bcrypt';
+import models from '../../models';
+import { Sequelize } from 'sequelize';
 
 export default {
   //회원가입
@@ -82,5 +84,27 @@ export default {
   //로그아웃
   logout: async (req, res) => {
     res.clearCookie('access_token').sendStatus(204); // No Content
+  },
+
+  //비밀번호변경
+  update: async (req, res) => {
+    const { email, password, changePassword } = req.body;
+    if (!email | !password | !changePassword) {
+      return res.sendStatus(401);
+    }
+    try {
+      const user = await User.findByEmail(email);
+      if (!user) {
+        return res.sendStatus(401).json({ message: 'User does not exsit' });
+      }
+      await user.update({
+        password: changePassword,
+        updatedAt: Sequelize.fn('NOW'),
+      });
+      console.log(user);
+      res.status(200).json({ message: 'Password successfully changed' });
+    } catch (e) {
+      res.status(500).json(e.toString());
+    }
   },
 };
