@@ -28,6 +28,7 @@ export async function createDummyClubData(masterId) {
     day: '수?이런거?정재님이 정하세요',
     limitUserNumber: 6,
     MasterId: masterId,
+    coverUrl: '/img/sampleDummyCoverUrl.png',
   }));
   await Club.bulkCreate(clubs);
 }
