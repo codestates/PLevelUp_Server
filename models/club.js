@@ -40,8 +40,9 @@ export default class Club extends Sequelize.Model {
   static associate(db) {
     db.Club.belongsTo(db.Master);
     db.Club.belongsToMany(db.User, {
+      //club.addBookmarkers , club.removeBookmarkers
       through: 'Bookmark',
-      foreignKey: 'ClubId',
+      as: 'Bookmarkers',
     });
     db.Club.hasMany(db.PaymentLog);
   }

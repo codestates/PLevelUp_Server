@@ -41,6 +41,10 @@ export default class User extends Sequelize.Model {
       through: 'Apply',
       foreignKey: 'UserId',
     });
+    db.User.belongsToMany(db.Club, {
+      through: 'Bookmark',
+      as: 'Bookmarked',
+    });
   }
 
   static findByEmail(email) {
