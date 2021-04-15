@@ -61,6 +61,7 @@ export default class User extends Sequelize.Model {
       {
         _id: this.id,
         email: this.email,
+        username: this.username,
       },
       process.env.JWT_SECRET,
       {
