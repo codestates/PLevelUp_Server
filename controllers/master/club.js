@@ -150,7 +150,7 @@ export default {
       const clubs = await Club.findAll({
         limit: perPage,
         order: [['id', 'DESC']],
-        offset: (page - 1) * 10,
+        offset: (page - 1) * perPage,
         where: { MasterId: master._id },
         include: [
           {
