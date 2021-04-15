@@ -137,7 +137,7 @@ export default {
   },
   list: async (req, res) => {
     // 한페이지에 몇개씩 ?
-    const perPage = 20;
+    const perPage = 12;
 
     const { master } = res;
 
