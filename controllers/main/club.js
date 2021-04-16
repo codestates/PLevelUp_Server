@@ -2,6 +2,7 @@ import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
 import mainCheckLoggedIn from '../../lib/mainCheckLoggedIn';
+import User from '../../models/user';
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -31,6 +32,11 @@ export default {
           {
             model: Master,
             attributes: ['id', 'email', 'username'],
+          },
+          {
+            model: User,
+            as: 'Bookmarkers',
+            attributes: ['id'],
           },
         ],
       });
@@ -67,6 +73,11 @@ export default {
           {
             model: Master,
             attributes: ['id', 'email', 'username'],
+          },
+          {
+            model: User,
+            as: 'Bookmarkers',
+            attributes: ['id'],
           },
         ],
         where: { id: id },
