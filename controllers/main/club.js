@@ -16,7 +16,7 @@ const clubListEllipsis = (body, limit) => {
 export default {
   list: async (req, res) => {
     // 한페이지에 몇개씩 ?
-    const perPage = 20;
+    const perPage = 12;
 
     const page = parseInt(req.query.page || '1', 10);
     if (page < 1) {
@@ -27,7 +27,7 @@ export default {
       const clubs = await Club.findAll({
         limit: perPage,
         order: [['id', 'DESC']],
-        offset: (page - 1) * 10,
+        offset: (page - 1) * perPage,
         include: [
           {
             model: Master,
@@ -41,7 +41,8 @@ export default {
         ],
       });
       const clubsCount = await Club.count();
-
+      console.log('qwer', clubsCount);
+      console.log('qwerqwer', Math.ceil(clubsCount / perPage));
       // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs

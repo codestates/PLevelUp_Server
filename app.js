@@ -1,3 +1,4 @@
+import multer from 'multer';
 require('dotenv').config();
 
 import express from 'express';
@@ -9,6 +10,7 @@ import routes from './routes';
 // import { createDefaultMaster, createDummyClubData } from './createDummyData';
 
 import jwtMiddleware from './lib/jwtMiddleware';
+import path from 'path';
 
 const app = express();
 const { PORT, COOKIE_SECRET } = process.env;
@@ -34,6 +36,8 @@ sequelize
   });
 
 app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/img', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));

@@ -27,6 +27,7 @@ export async function createDummyClubData(masterId) {
     day: '5',
     limitUserNumber: 6,
     MasterId: masterId,
+    coverUrl: '/img/sampleDummyCoverUrl.png',
   }));
   await Club.bulkCreate(clubs);
 }

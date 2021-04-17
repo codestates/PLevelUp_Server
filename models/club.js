@@ -14,6 +14,7 @@ export default class Club extends Sequelize.Model {
         endDate: Sequelize.DATE,
         day: { type: Sequelize.STRING, allowNull: false },
         limitUserNumber: { type: Sequelize.INTEGER, allowNull: false },
+        coverUrl: { type: Sequelize.STRING, allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
