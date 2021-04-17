@@ -1,7 +1,8 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
-
+import mainCheckLoggedIn from '../../lib/mainCheckLoggedIn';
+import User from '../../models/user';
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -31,6 +32,11 @@ export default {
           {
             model: Master,
             attributes: ['id', 'email', 'username'],
+          },
+          {
+            model: User,
+            as: 'Bookmarkers',
+            attributes: ['id'],
           },
         ],
       });
@@ -69,6 +75,11 @@ export default {
             model: Master,
             attributes: ['id', 'email', 'username'],
           },
+          {
+            model: User,
+            as: 'Bookmarkers',
+            attributes: ['id'],
+          },
         ],
         where: { id: id },
       });
@@ -79,6 +90,38 @@ export default {
       }
       res.masterClub = club;
       res.status(200).send(res.masterClub);
+    } catch (e) {
+      res.status(500).send(e.toString());
+    }
+  },
+  bookmark: async (req, res) => {
+    // POST /api/main/club/bookmark/1
+    try {
+      const { user } = res; // 로그인한 user를 가져옴
+      const { clubId } = req.params;
+      const club = await Club.findOne({ where: { id: clubId } }); // 북마크요청된 클럽을 가져옴
+      if (!club) {
+        res.status(403).send('클럽이 존재하지 않습니다.');
+      }
+      console.log(user._id);
+      await club.addBookmarkers(user._id);
+      res.status(200).send({ ClubId: club.id, UserId: user._id });
+    } catch (e) {
+      console.log(e);
+      res.status(500).send(e.toString());
+    }
+  },
+  cancelbookmark: async (req, res) => {
+    // DELETE /api/main/club/bookmark/1
+    try {
+      const { user } = res;
+      const { clubId } = req.params;
+      const club = await Club.findOne({ where: { id: clubId } });
+      if (!club) {
+        res.status(403).send('클럽이 존재하지 않습니다.');
+      }
+      await club.removeBookmarkers(user._id);
+      res.status(200).json({ ClubId: club.id, UserId: user._id });
     } catch (e) {
       res.status(500).send(e.toString());
     }
