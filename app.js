@@ -18,7 +18,7 @@ const { PORT, COOKIE_SECRET } = process.env;
 sequelize
   .sync({ force: false })
   .then(() => {
-    console.log('데이터베이스 연결 성공');
+    // console.log('데이터베이스 연결 성공');
     // createDefaultMaster().then(masterId =>
     //   createDummyClubData(masterId).then(_ =>
     //     console.log('club테스트 데이터 추가 완료'),

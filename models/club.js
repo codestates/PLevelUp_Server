@@ -15,6 +15,7 @@ export default class Club extends Sequelize.Model {
         day: { type: Sequelize.STRING, allowNull: false },
         limitUserNumber: { type: Sequelize.INTEGER, allowNull: false },
         coverUrl: { type: Sequelize.STRING, allowNull: false },
+        isBookmark: { type: Sequelize.BOOLEAN, allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
