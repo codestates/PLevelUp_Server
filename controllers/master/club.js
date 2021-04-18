@@ -165,7 +165,6 @@ export default {
         .map(club => {
           return {
             ...club,
-            summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, -1),
           };
         });
@@ -208,11 +207,6 @@ export default {
       return;
     }
     const nextData = { ...req.body, updatedAt: new Date() }; // 객체를 복사하고
-
-    // body 값이 주여졌으면 HTML 필터링
-    if (nextData.summary) {
-      nextData.summary = sanitizeHtml(nextData.summary, sanitizeOption);
-    }
 
     if (nextData.description) {
       nextData.description = sanitizeHtml(nextData.description, sanitizeOption);

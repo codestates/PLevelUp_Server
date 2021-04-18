@@ -50,7 +50,6 @@ export default {
         .map(club => {
           return {
             ...club,
-            summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, -1),
           };
         });
