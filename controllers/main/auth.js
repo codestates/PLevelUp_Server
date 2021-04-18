@@ -87,22 +87,37 @@ export default {
   },
 
   //비밀번호변경
-  update: async (req, res) => {
-    const { email, password, changePassword } = req.body;
-    if (!email | !password | !changePassword) {
-      return res.sendStatus(401);
+  changePassword: async (req, res) => {
+    const { password, changePassword } = req.body;
+
+    if (!password || !changePassword) {
+      return res.sendStatus(400);
     }
     try {
-      const user = await User.findByEmail(email);
+      const user = await User.findByEmail(res.user.email);
+
       if (!user) {
-        return res.sendStatus(401).json({ message: 'User does not exsit' });
+        return res.sendStatus(401);
       }
+
+      const isValid = await user.checkPassword(password);
+      if (!isValid) {
+        res.sendStatus(401);
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(req.body.changePassword, 10);
       await user.update({
-        password: changePassword,
-        updatedAt: Sequelize.fn('NOW'),
+        password: hashedPassword,
+        updatedAt: new Date(),
       });
-      console.log(user);
-      res.status(200).json({ message: 'Password successfully changed' });
+      const data = user.serialize();
+      const token = user.generateToken();
+      res.cookie('access_token', token, {
+        maxAge: 1000 * 60 * 60 * 24 * 1,
+        httpOnly: true,
+      });
+      res.status(200).send(data);
     } catch (e) {
       res.status(500).json(e.toString());
     }
