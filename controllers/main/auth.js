@@ -1,8 +1,9 @@
 import Joi from 'joi';
 import User from '../../models/user';
 import bcrypt from 'bcrypt';
-import models from '../../models';
-import { Sequelize } from 'sequelize';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { generateToken } from '../../common/utils';
 
 export default {
   //회원가입
@@ -32,47 +33,107 @@ export default {
         password: hashedPassword,
       });
       const user = await User.findByEmail(email);
-      const data = user.serialize();
-      const token = user.generateToken();
-      res.cookie('access_token', token, {
-        maxAge: 1000 * 60 * 60 * 24 * 1,
-        httpOnly: true,
+
+      req.login(user, { session: false }, error => {
+        if (error) next(error);
+        const access_token = generateToken(
+          user.id,
+          user.email,
+          user.username,
+          user.type,
+        );
+        const data = user.serialize();
+        return res
+          .cookie('access_token', access_token, {
+            maxAge: 1000 * 60 * 60 * 24 * 1,
+            httpOnly: true,
+          })
+          .status(200)
+          .json(data);
       });
-      res.status(200).send(data);
     } catch (e) {
       res.status(500).json(e.toString());
     }
   },
   //로그인
-  login: async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.sendStatus(401);
-    }
-    try {
-      const user = await User.findByEmail(email);
-      if (!user) {
-        res.sendStatus(401);
-        return;
-      }
-      const isValid = await user.checkPassword(password);
-      if (!isValid) {
-        res.sendStatus(401);
-        return;
-      }
-      const data = user.serialize();
-      const token = user.generateToken();
-      res.cookie('access_token', token, {
-        maxAge: 1000 * 60 * 60 * 24 * 1,
-        httpOnly: true,
+  login: async (req, res, next) => {
+    passport.authenticate('local', { session: false }, (err, user) => {
+      if (err || !user) return res.sendStatus(401);
+      req.login(user, { session: false }, error => {
+        if (error) next(error);
+        const access_token = generateToken(
+          user.id,
+          user.email,
+          user.username,
+          user.type,
+        );
+        const data = user.serialize();
+        return res
+          .cookie('access_token', access_token, {
+            maxAge: 1000 * 60 * 60 * 24 * 1,
+            httpOnly: true,
+          })
+          .status(200)
+          .json(data);
       });
-      res.status(200).send(data);
-    } catch (e) {
-      res.status(500).send(e.toString());
-    }
+    })(req, res, next);
+  },
+  loginKakao: async (req, res, next) => {
+    passport.authenticate('kakao', { session: false }, (err, user) => {
+      if (err || !user) return res.sendStatus(401);
+      req.login(user, { session: false }, error => {
+        if (error) {
+          next(error);
+        }
+        const access_token = generateToken(
+          user.snsId,
+          user.email,
+          user.displayName,
+          user.type,
+        );
+
+        const data = user.serialize();
+        return res
+          .cookie('access_token', access_token, {
+            maxAge: 1000 * 60 * 60 * 24 * 1,
+            httpOnly: true,
+          })
+          .status(200)
+          .json(data);
+      });
+    })(req, res, next);
+  },
+  loginGoogle: async (req, res, next) => {
+    passport.authenticate(
+      'google',
+      { session: false, failureRedirect: '/api/main/auth/login' },
+      (err, user) => {
+        if (err || !user) return res.sendStatus(401);
+        req.login(user, { session: false }, error => {
+          if (error) {
+            next(error);
+          }
+          const access_token = generateToken(
+            user.snsId,
+            user.email,
+            user.displayName,
+            user.type,
+          );
+          const data = user.serialize();
+          return res
+            .cookie('access_token', access_token, {
+              maxAge: 1000 * 60 * 60 * 24 * 1,
+              httpOnly: true,
+            })
+            .status(200)
+            .json(data);
+        });
+      },
+    )(req, res, next);
   },
   //로그인 상태확인
   isLogin: async (req, res) => {
+    console.log('qwerqwer', res.user);
     const { user } = res;
     if (!user) {
       // 로그인 중 아님
@@ -83,9 +144,9 @@ export default {
   },
   //로그아웃
   logout: async (req, res) => {
+    req.logout();
     res.clearCookie('access_token').sendStatus(204); // No Content
   },
-
   //비밀번호변경
   changePassword: async (req, res) => {
     const { password, changePassword } = req.body;
