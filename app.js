@@ -1,13 +1,9 @@
-import multer from 'multer';
-require('dotenv').config();
-
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
-// import { createDummyClubDataForTest } from './createDummyData';
 import {
   createDefaultMaster,
   createDummyClubData,
@@ -15,7 +11,10 @@ import {
 } from './createDummyData';
 import jwtMiddleware from './lib/jwtMiddleware';
 import path from 'path';
+import dotenv from 'dotenv';
+import passport from 'passport';
 
+dotenv.config();
 const app = express();
 const { PORT, COOKIE_SECRET, NODE_ENV } = process.env;
 
@@ -67,6 +66,7 @@ app.use(
     credentials: true,
   }),
 );
+app.use(passport.initialize());
 app.use(jwtMiddleware);
 
 // 서버는 '/' 가 필요없지만 임시 페이지 작성함

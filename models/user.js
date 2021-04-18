@@ -8,9 +8,18 @@ export default class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        email: { type: Sequelize.STRING, allowNull: false, unique: true },
-        username: { type: Sequelize.STRING, allowNull: false },
+        email: { type: Sequelize.STRING(40), allowNull: false, unique: true },
+        username: { type: Sequelize.STRING(30), allowNull: false },
         password: { type: Sequelize.STRING, allowNull: false },
+        type: {
+          type: Sequelize.STRING(10),
+          allowNull: false,
+          defaultValue: 'local',
+        },
+        snsId: {
+          type: Sequelize.STRING(30),
+          allowNull: true,
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
@@ -63,9 +72,10 @@ export default class User extends Sequelize.Model {
   generateToken() {
     return jwt.sign(
       {
-        _id: this.id,
+        id: this.id,
         email: this.email,
         username: this.username,
+        type: this.type,
       },
       process.env.JWT_SECRET,
       {
