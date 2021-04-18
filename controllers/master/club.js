@@ -85,7 +85,6 @@ export default {
       place: Joi.string().required(),
       price: Joi.number().required(),
       description: Joi.string().required(),
-      topic: Joi.string().required(),
       startDate: Joi.date().required(),
       endDate: Joi.date().required(),
       day: Joi.string().required(),
@@ -105,7 +104,6 @@ export default {
       place,
       price,
       description,
-      topic,
       startDate,
       endDate,
       day,
@@ -120,7 +118,6 @@ export default {
         place: place,
         price: price,
         description: sanitizeHtml(description, sanitizeOption),
-        topic: topic,
         startDate: startDate,
         endDate: endDate,
         day: day,
@@ -170,7 +167,6 @@ export default {
             ...club,
             summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, -1),
-            topic: clubListEllipsis(club.topic, 50),
           };
         });
       res.status(200).send(data);
@@ -199,7 +195,6 @@ export default {
       place: Joi.string(),
       price: Joi.number(),
       description: Joi.string(),
-      topic: Joi.string(),
       startDate: Joi.date(),
       endDate: Joi.date(),
       day: Joi.string(),
@@ -221,10 +216,6 @@ export default {
 
     if (nextData.description) {
       nextData.description = sanitizeHtml(nextData.description, sanitizeOption);
-    }
-
-    if (nextData.topic) {
-      nextData.topic = sanitizeHtml(nextData.topic, sanitizeOption);
     }
 
     try {

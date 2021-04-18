@@ -52,7 +52,6 @@ export default {
             ...club,
             summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, -1),
-            topic: clubListEllipsis(club.topic, 50),
           };
         });
       res.status(200).send(data);
