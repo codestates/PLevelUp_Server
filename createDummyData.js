@@ -27,7 +27,6 @@ export async function createDummyClubData(masterId) {
     limitUserNumber: 6,
     MasterId: masterId,
     coverUrl: '/img/sampleDummyCoverUrl.png',
-    isBookmark: false,
   }));
   await Club.bulkCreate(clubs);
 }
@@ -46,7 +45,6 @@ export async function createDummyClubDataForTest(masterId) {
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: '/img/sampleDummyCoverUrl.png',
-      isBookmark: false,
     },
     {
       title: `(마감임박)스타트업DNA`,
@@ -61,7 +59,6 @@ export async function createDummyClubDataForTest(masterId) {
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: '/img/sampleDummyCoverUrl.png',
-      isBookmark: false,
     },
     {
       title: `(normal)스타트업DNA`,
@@ -76,7 +73,6 @@ export async function createDummyClubDataForTest(masterId) {
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: '/img/sampleDummyCoverUrl.png',
-      isBookmark: false,
     },
     {
       title: `(place)스타트업DNA`,
@@ -91,7 +87,6 @@ export async function createDummyClubDataForTest(masterId) {
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: '/img/sampleDummyCoverUrl.png',
-      isBookmark: false,
     },
   ];
   await Club.bulkCreate(clubs);
