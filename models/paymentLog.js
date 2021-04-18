@@ -10,6 +10,7 @@ export default class PaymentLog extends Sequelize.Model {
           allowNull: false,
           defaultValue: Sequelize.NOW,
         },
+        price: { type: Sequelize.INTEGER, allowNull: true },
       },
       {
         sequelize,
