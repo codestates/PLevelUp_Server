@@ -94,7 +94,7 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  bookmark: async (req, res) => {
+  addbookmark: async (req, res) => {
     // POST /api/main/club/bookmark/1
     try {
       const { user } = res; // 로그인한 user를 가져옴
@@ -111,7 +111,7 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  cancelbookmark: async (req, res) => {
+  removebookmark: async (req, res) => {
     // DELETE /api/main/club/bookmark/1
     try {
       const { user } = res;

@@ -7,11 +7,11 @@ const router = express.Router();
 router.get('/', controller.list);
 router.get('/:id', controller.read);
 
-router.post('/bookmark/:clubId', mainCheckLoggedIn, controller.bookmark);
+router.post('/addbookmark/:clubId', mainCheckLoggedIn, controller.addbookmark);
 router.delete(
-  '/bookmark/:clubId',
+  '/removebookmark/:clubId',
   mainCheckLoggedIn,
-  controller.cancelbookmark,
+  controller.removebookmark,
 );
 
 export default router;
