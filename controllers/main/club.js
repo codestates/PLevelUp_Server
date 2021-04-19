@@ -1,9 +1,9 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
-import mainCheckLoggedIn from '../../lib/mainCheckLoggedIn';
-import User from '../../models/user';
 import db from '../../models/index';
+import { Op } from 'sequelize';
+
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -25,28 +25,39 @@ export default {
       res.sendStatus(400);
       return;
     }
+    const userId = res.user ? res.user.id : null;
+
+    const conditions = {
+      limit: perPage,
+      order: [['id', 'DESC']],
+      offset: (page - 1) * perPage,
+      include: [
+        {
+          model: Master,
+          attributes: ['id', 'email', 'username'],
+        },
+        {
+          model: Bookmark,
+          attributes: ['UserId'],
+          required: false,
+          where: {
+            UserId: userId,
+          },
+        },
+      ],
+    };
+
+    if (req.query.search) {
+      conditions.where = {
+        title: {
+          [Op.like]: '%' + req.query.search + '%',
+        },
+      };
+    }
+
     try {
-      console.log(res.user);
-      const clubs = await Club.findAll({
-        limit: perPage,
-        order: [['id', 'DESC']],
-        offset: (page - 1) * perPage,
-        include: [
-          {
-            model: Master,
-            attributes: ['id', 'email', 'username'],
-          },
-          {
-            model: Bookmark,
-            attributes: ['UserId'],
-            required: false,
-            where: {
-              UserId: res.user.id,
-            },
-          },
-        ],
-      });
-      const clubsCount = await Club.count();
+      const clubs = await Club.findAll(conditions);
+      const clubsCount = await Club.count(conditions);
       // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs
@@ -64,6 +75,7 @@ export default {
         });
       res.status(200).send(data);
     } catch (e) {
+      console.error(`main club list error: ${e.toString()}`);
       res.status(500).send(e.toString());
     }
   },
@@ -112,7 +124,6 @@ export default {
       await club.addBookmarkers(user.id);
       res.status(200).send({ ClubId: club.id, UserId: user.id });
     } catch (e) {
-      console.log(e);
       res.status(500).send(e.toString());
     }
   },
