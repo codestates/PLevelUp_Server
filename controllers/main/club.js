@@ -41,8 +41,6 @@ export default {
         ],
       });
       const clubsCount = await Club.count();
-      console.log('qwer', clubsCount);
-      console.log('qwerqwer', Math.ceil(clubsCount / perPage));
       // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs
@@ -101,7 +99,6 @@ export default {
       if (!club) {
         res.status(403).send('클럽이 존재하지 않습니다.');
       }
-      console.log(user._id);
       await club.addBookmarkers(user._id);
       res.status(200).send({ ClubId: club.id, UserId: user._id });
     } catch (e) {
