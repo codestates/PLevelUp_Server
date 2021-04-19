@@ -55,6 +55,12 @@ export default {
       };
     }
 
+    if (req.query.place) {
+      conditions.where = {
+        place: req.query.place,
+      };
+    }
+
     try {
       const clubs = await Club.findAll(conditions);
       const clubsCount = await Club.count(conditions);
@@ -66,7 +72,7 @@ export default {
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
-            isBookmark: club.Bookmarked.length === 1 ? true : false,
+            isBookmark: club.Bookmarked.length === 1,
           };
         })
         .map(club => {
