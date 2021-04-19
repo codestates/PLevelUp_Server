@@ -3,6 +3,7 @@ import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
 import mainCheckLoggedIn from '../../lib/mainCheckLoggedIn';
 import User from '../../models/user';
+import db from '../../models/index';
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -123,6 +124,24 @@ export default {
       await club.removeBookmarkers(user._id);
       res.status(200).json({ ClubId: club.id, UserId: user._id });
     } catch (e) {
+      res.status(500).send(e.toString());
+    }
+  },
+  getbookmark: async (req, res) => {
+    try {
+      const { Bookmark } = db.sequelize.models;
+
+      const { user } = res;
+      const ClubList = await Club.findAll({
+        include: {
+          model: Bookmark,
+          where: { userId: user._id },
+        },
+      });
+
+      res.status(200).send(ClubList);
+    } catch (e) {
+      console.log(e);
       res.status(500).send(e.toString());
     }
   },
