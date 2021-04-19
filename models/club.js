@@ -5,17 +5,15 @@ export default class Club extends Sequelize.Model {
     return super.init(
       {
         title: { type: Sequelize.STRING, allowNull: false },
-        summary: { type: Sequelize.TEXT, allowNull: false },
+        summary: { type: Sequelize.STRING, allowNull: false },
         place: { type: Sequelize.STRING, allowNull: false },
         price: { type: Sequelize.INTEGER, allowNull: false },
         description: { type: Sequelize.TEXT, allowNull: false },
-        topic: { type: Sequelize.TEXT, allowNull: false },
         startDate: Sequelize.DATE,
         endDate: Sequelize.DATE,
         day: { type: Sequelize.STRING, allowNull: false },
         limitUserNumber: { type: Sequelize.INTEGER, allowNull: false },
         coverUrl: { type: Sequelize.STRING, allowNull: false },
-        isBookmark: { type: Sequelize.BOOLEAN, allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
