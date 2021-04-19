@@ -1,9 +1,9 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
-import mainCheckLoggedIn from '../../lib/mainCheckLoggedIn';
-import User from '../../models/user';
-import db from '../../models/index';
+import { Op } from 'sequelize';
+import { sequelize } from '../../models';
+const { Bookmark } = sequelize.models;
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -13,7 +13,18 @@ const clubListEllipsis = (body, limit) => {
     ? filtered
     : `${filtered.slice(0, limit)}...`;
 };
-const { Bookmark } = db.sequelize.models;
+
+const checkDateVsNow = (date, isNew) => {
+  if (isNew) {
+    return (
+      (new Date().getTime() - new Date().getTime(date)) / (1000 * 60 * 60 * 24)
+    );
+  } else {
+    return (
+      (new Date(date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    );
+  }
+};
 
 export default {
   list: async (req, res) => {
@@ -26,28 +37,50 @@ export default {
       return;
     }
     const userId = res.user ? res.user.id : null;
+
+    const conditions = {
+      limit: perPage,
+      order: [['id', 'DESC']],
+      offset: (page - 1) * perPage,
+      include: [
+        {
+          model: Master,
+          attributes: ['id', 'email', 'username'],
+        },
+        {
+          model: Bookmark,
+          attributes: ['UserId'],
+          required: false,
+          where: {
+            UserId: userId,
+          },
+        },
+      ],
+    };
+
+    if (req.query.search) {
+      conditions.where = {
+        title: {
+          [Op.like]: '%' + req.query.search + '%',
+        },
+      };
+    }
+
+    if (req.query.place) {
+      conditions.where = {
+        place: req.query.place,
+      };
+    }
+
+    if (req.query.day) {
+      conditions.where = {
+        day: req.query.day,
+      };
+    }
+
     try {
-      console.log(res.user);
-      const clubs = await Club.findAll({
-        limit: perPage,
-        order: [['id', 'DESC']],
-        offset: (page - 1) * perPage,
-        include: [
-          {
-            model: Master,
-            attributes: ['id', 'email', 'username'],
-          },
-          {
-            model: Bookmark,
-            attributes: ['UserId'],
-            required: false,
-            where: {
-              UserId: userId,
-            },
-          },
-        ],
-      });
-      const clubsCount = await Club.count();
+      const clubs = await Club.findAll(conditions);
+      const clubsCount = await Club.count(conditions);
       // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs
@@ -56,7 +89,12 @@ export default {
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
-            isBookmark: club.Bookmarked.length === 1 ? true : false,
+            isBookmark: club.Bookmarked.length === 1,
+            isOnline: club.place === '온라인',
+            isNew: checkDateVsNow(club.startDate, true) < 7,
+            isMostEnd: checkDateVsNow(club.endDate, false) < 7,
+            isEnd: checkDateVsNow(club.endDate, false) < 0,
+            isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
         .map(club => {
@@ -65,6 +103,7 @@ export default {
         });
       res.status(200).send(data);
     } catch (e) {
+      console.error(`main club list error: ${e.toString()}`);
       res.status(500).send(e.toString());
     }
   },
