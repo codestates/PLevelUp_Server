@@ -4,11 +4,11 @@ import { sequelize } from './models';
 import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes';
-// import {
-//   createDefaultMaster,
-//   createDummyClubData,
-//   createDummyClubDataForTest,
-// } from './createDummyData';
+import {
+  createDefaultMaster,
+  createDummyClubData,
+  createDummyClubDataForTest,
+} from './createDummyData';
 import jwtMiddleware from './lib/jwtMiddleware';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -22,24 +22,24 @@ sequelize
   .sync({ force: false })
   .then(() => {
     console.log('데이터베이스 연결 성공');
-    // if (NODE_ENV === 'development') {
-    //   createDefaultMaster()
-    //     .then(masterId => {
-    //       console.log('테스트 클럽장 계정 추가 완료');
-    //       return createDummyClubData(masterId).then(_ =>
-    //         createDummyClubDataForTest(masterId).then(_ =>
-    //           console.log('테스트 club 데이터 추가 완료'),
-    //         ),
-    //       );
-    // })
-    // .catch(e => {
-    //   if (e.errors[0].message === 'masters.email must be unique') {
-    //     console.log('테스트 클럽장 계정이 이미 적용 되어 있음');
-    //     return;
-    //   }
-    //   console.log(e.toString());
-    // });
-    // }
+    if (NODE_ENV === 'development') {
+      createDefaultMaster()
+        .then(masterId => {
+          console.log('테스트 클럽장 계정 추가 완료');
+          return createDummyClubData(masterId).then(_ =>
+            createDummyClubDataForTest(masterId).then(_ =>
+              console.log('테스트 club 데이터 추가 완료'),
+            ),
+          );
+        })
+        .catch(e => {
+          if (e.errors[0].message === 'masters.email must be unique') {
+            console.log('테스트 클럽장 계정이 이미 적용 되어 있음');
+            return;
+          }
+          console.log(e.toString());
+        });
+    }
   })
   .catch(err => {
     if (err.original.sqlState === '42000') {

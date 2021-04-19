@@ -26,6 +26,7 @@ export default {
       return;
     }
     try {
+      console.log(res.user);
       const clubs = await Club.findAll({
         limit: perPage,
         order: [['id', 'DESC']],
@@ -38,6 +39,10 @@ export default {
           {
             model: Bookmark,
             attributes: ['UserId'],
+            required: false,
+            where: {
+              UserId: res.user.id,
+            },
           },
         ],
       });
@@ -50,7 +55,12 @@ export default {
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
+            isBookmark: club.Bookmarked.length === 1 ? true : false,
           };
+        })
+        .map(club => {
+          delete club.Bookmarked;
+          return club;
         });
       res.status(200).send(data);
     } catch (e) {
