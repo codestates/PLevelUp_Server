@@ -13,6 +13,7 @@ const clubListEllipsis = (body, limit) => {
     ? filtered
     : `${filtered.slice(0, limit)}...`;
 };
+const { Bookmark } = db.sequelize.models;
 
 export default {
   list: async (req, res) => {
@@ -35,9 +36,8 @@ export default {
             attributes: ['id', 'email', 'username'],
           },
           {
-            model: User,
-            as: 'Bookmarkers',
-            attributes: ['id'],
+            model: Bookmark,
+            attributes: ['UserId'],
           },
         ],
       });
@@ -73,9 +73,8 @@ export default {
             attributes: ['id', 'email', 'username'],
           },
           {
-            model: User,
-            as: 'Bookmarkers',
-            attributes: ['id'],
+            model: Bookmark,
+            attributes: ['UserId'],
           },
         ],
         where: { id: id },
@@ -100,8 +99,8 @@ export default {
       if (!club) {
         res.status(403).send('클럽이 존재하지 않습니다.');
       }
-      await club.addBookmarkers(user._id);
-      res.status(200).send({ ClubId: club.id, UserId: user._id });
+      await club.addBookmarkers(user.id);
+      res.status(200).send({ ClubId: club.id, UserId: user.id });
     } catch (e) {
       console.log(e);
       res.status(500).send(e.toString());
@@ -116,24 +115,22 @@ export default {
       if (!club) {
         res.status(403).send('클럽이 존재하지 않습니다.');
       }
-      await club.removeBookmarkers(user._id);
-      res.status(200).json({ ClubId: club.id, UserId: user._id });
+      await club.removeBookmarkers(user.id);
+      res.status(200).json({ ClubId: club.id, UserId: user.id });
     } catch (e) {
       res.status(500).send(e.toString());
     }
   },
   getbookmark: async (req, res) => {
     try {
-      const { Bookmark } = db.sequelize.models;
-
       const { user } = res;
       const ClubList = await Club.findAll({
         include: {
           model: Bookmark,
-          where: { userId: user._id },
+          attributes: [],
+          where: { userId: user.id },
         },
       });
-
       res.status(200).send(ClubList);
     } catch (e) {
       console.log(e);
