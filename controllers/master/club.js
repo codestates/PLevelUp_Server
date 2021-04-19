@@ -85,7 +85,6 @@ export default {
       place: Joi.string().required(),
       price: Joi.number().required(),
       description: Joi.string().required(),
-      topic: Joi.string().required(),
       startDate: Joi.date().required(),
       endDate: Joi.date().required(),
       day: Joi.string().required(),
@@ -105,7 +104,6 @@ export default {
       place,
       price,
       description,
-      topic,
       startDate,
       endDate,
       day,
@@ -120,7 +118,6 @@ export default {
         place: place,
         price: price,
         description: sanitizeHtml(description, sanitizeOption),
-        topic: topic,
         startDate: startDate,
         endDate: endDate,
         day: day,
@@ -168,9 +165,7 @@ export default {
         .map(club => {
           return {
             ...club,
-            summary: clubListEllipsis(club.summary, 50),
             description: clubListEllipsis(club.description, -1),
-            topic: clubListEllipsis(club.topic, 50),
           };
         });
       res.status(200).send(data);
@@ -199,7 +194,6 @@ export default {
       place: Joi.string(),
       price: Joi.number(),
       description: Joi.string(),
-      topic: Joi.string(),
       startDate: Joi.date(),
       endDate: Joi.date(),
       day: Joi.string(),
@@ -214,17 +208,8 @@ export default {
     }
     const nextData = { ...req.body, updatedAt: new Date() }; // 객체를 복사하고
 
-    // body 값이 주여졌으면 HTML 필터링
-    if (nextData.summary) {
-      nextData.summary = sanitizeHtml(nextData.summary, sanitizeOption);
-    }
-
     if (nextData.description) {
       nextData.description = sanitizeHtml(nextData.description, sanitizeOption);
-    }
-
-    if (nextData.topic) {
-      nextData.topic = sanitizeHtml(nextData.topic, sanitizeOption);
     }
 
     try {
