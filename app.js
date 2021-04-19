@@ -60,7 +60,7 @@ app.use(cookieParser(COOKIE_SECRET));
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://p-levelup.com'],
     methods: ['GET', 'POST', 'OPTION', 'DELETE', 'PATCH'],
     exposedHeaders: ['last-page'],
     credentials: true,
@@ -78,5 +78,7 @@ app.use('/api', routes);
 
 const port = PORT || 5000;
 app.listen(port, () => {
-  console.log(`Server start at http://localhost:${port}`);
+  console.log(
+    `Server start at http://localhost:${port}` + process.env.NODE_ENV,
+  );
 });
