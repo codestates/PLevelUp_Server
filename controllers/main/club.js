@@ -25,6 +25,7 @@ export default {
       res.sendStatus(400);
       return;
     }
+    const userId = res.user ? res.user.id : null;
     try {
       console.log(res.user);
       const clubs = await Club.findAll({
@@ -41,7 +42,7 @@ export default {
             attributes: ['UserId'],
             required: false,
             where: {
-              UserId: res.user.id,
+              UserId: userId,
             },
           },
         ],
