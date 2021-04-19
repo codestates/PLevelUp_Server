@@ -61,6 +61,12 @@ export default {
       };
     }
 
+    if (req.query.day) {
+      conditions.where = {
+        day: req.query.day,
+      };
+    }
+
     try {
       const clubs = await Club.findAll(conditions);
       const clubsCount = await Club.count(conditions);
