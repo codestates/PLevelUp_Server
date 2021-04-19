@@ -1,9 +1,9 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
-import db from '../../models/index';
 import { Op } from 'sequelize';
-
+import { sequelize } from '../../models';
+const { Bookmark } = sequelize.models;
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -13,7 +13,18 @@ const clubListEllipsis = (body, limit) => {
     ? filtered
     : `${filtered.slice(0, limit)}...`;
 };
-const { Bookmark } = db.sequelize.models;
+
+const checkDateVsNow = (date, isNew) => {
+  if (isNew) {
+    return (
+      (new Date().getTime() - new Date().getTime(date)) / (1000 * 60 * 60 * 24)
+    );
+  } else {
+    return (
+      (new Date(date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    );
+  }
+};
 
 export default {
   list: async (req, res) => {
@@ -79,6 +90,11 @@ export default {
             ...club,
             description: clubListEllipsis(club.description, -1),
             isBookmark: club.Bookmarked.length === 1,
+            isOnline: club.place === '온라인',
+            isNew: checkDateVsNow(club.startDate, true) < 7,
+            isMostEnd: checkDateVsNow(club.endDate, false) < 7,
+            isEnd: checkDateVsNow(club.endDate, false) < 0,
+            isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
         .map(club => {
