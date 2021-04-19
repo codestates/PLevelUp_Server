@@ -152,6 +152,7 @@ export default {
       await club.addBookmarkers(user.id);
       res.status(200).send({ ClubId: club.id, UserId: user.id });
     } catch (e) {
+      console.log(e);
       res.status(500).send(e.toString());
     }
   },
