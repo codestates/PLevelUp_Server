@@ -5,6 +5,7 @@ import masterCheckLoggedIn from '../../lib/masterCheckLoggedIn';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { SERVER_HOST } from '../../app';
 
 const router = express.Router();
 
@@ -31,9 +32,8 @@ const upload = multer({
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-
 router.post('/img', upload.single('img'), (req, res) => {
-  res.json({ url: `/img/${req.file.filename}` });
+  res.json({ url: `${SERVER_HOST}/img/${req.file.filename}` });
 });
 
 export default router;
