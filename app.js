@@ -61,7 +61,6 @@ app.use(cookieParser(COOKIE_SECRET));
 app.use(
   cors({
     origin: true,
-    methods: ['GET', 'POST', 'OPTION', 'DELETE', 'PATCH'],
     exposedHeaders: ['last-page'],
     credentials: true,
   }),
