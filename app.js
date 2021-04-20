@@ -79,7 +79,7 @@ const port = PORT || 5000;
 export const SERVER_HOST = `${HOST}:${port}`;
 app.listen(port, () => {
   if (NODE_ENV === 'production') {
-    console.log(`Server start at production Host `);
+    console.log(`Server start at production Host`);
   } else {
     console.log(`Server start at ${SERVER_HOST}`);
   }
