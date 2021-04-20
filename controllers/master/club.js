@@ -2,6 +2,7 @@ import Club from '../../models/club';
 import Joi from 'joi';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
+import { getDayOfWeek } from '../../common/utils';
 
 const sanitizeOption = {
   allowedTags: [
@@ -86,8 +87,8 @@ export default {
       price: Joi.number().required(),
       description: Joi.string().required(),
       startDate: Joi.date().required(),
-      endDate: Joi.date().required(),
-      day: Joi.string().required(),
+      times: Joi.number().required(),
+      // day: Joi.string().required(),
       limitUserNumber: Joi.number().required(),
       coverUrl: Joi.string().required(),
     });
@@ -105,12 +106,12 @@ export default {
       price,
       description,
       startDate,
-      endDate,
-      day,
+      times,
+      //day,
       limitUserNumber,
       coverUrl,
     } = req.body;
-
+    const day = getDayOfWeek(startDate);
     try {
       const club = await Club.create({
         title: title,
@@ -119,7 +120,7 @@ export default {
         price: price,
         description: sanitizeHtml(description, sanitizeOption),
         startDate: startDate,
-        endDate: endDate,
+        times: times,
         day: day,
         limitUserNumber: limitUserNumber,
         MasterId: res.master._id,
@@ -195,8 +196,8 @@ export default {
       price: Joi.number(),
       description: Joi.string(),
       startDate: Joi.date(),
-      endDate: Joi.date(),
-      day: Joi.string(),
+      times: Joi.number(),
+      // day: Joi.string(),
       limitUserNumber: Joi.number(),
       coverUrl: Joi.string().required(),
     });
@@ -210,6 +211,10 @@ export default {
 
     if (nextData.description) {
       nextData.description = sanitizeHtml(nextData.description, sanitizeOption);
+    }
+
+    if (nextData.startDate) {
+      nextData.day = getDayOfWeek(req.body.startDate);
     }
 
     try {

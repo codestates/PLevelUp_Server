@@ -2,6 +2,7 @@ import Club from './models/club';
 import Master from './models/master';
 import bcrypt from 'bcrypt';
 import { SERVER_HOST } from './app';
+import { getDayOfWeek } from './common/utils';
 
 export async function createDefaultMaster() {
   const hashedPassword = await bcrypt.hash('12341234', 10);
@@ -22,9 +23,9 @@ export async function createDummyClubData(masterId) {
     price: 50000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    startDate: '2021-04-07 14:20:09.168',
-    endDate: '2021-04-07 14:20:09.168',
-    day: '금',
+    startDate: '2021-04-07',
+    times: 12,
+    day: getDayOfWeek('2021-04-07'),
     limitUserNumber: 6,
     MasterId: masterId,
     coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -37,9 +38,9 @@ export async function createDummyClubData(masterId) {
     price: 50000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    startDate: '2021-04-22 14:20:09.168',
-    endDate: '2021-06-30 14:20:09.168',
-    day: '월',
+    startDate: '2021-04-22',
+    times: 4,
+    day: getDayOfWeek('2021-04-22'),
     limitUserNumber: 4,
     MasterId: masterId,
     coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -51,9 +52,9 @@ export async function createDummyClubData(masterId) {
     price: 50000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    startDate: '2021-04-22 14:20:09.168',
-    endDate: '2021-06-30 14:20:09.168',
-    day: '수',
+    startDate: '2021-04-22',
+    times: 6,
+    day: getDayOfWeek('2021-04-22'),
     limitUserNumber: 10,
     MasterId: masterId,
     coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -65,9 +66,9 @@ export async function createDummyClubData(masterId) {
     price: 50000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    startDate: '2021-04-22 14:20:09.168',
-    endDate: '2021-06-30 14:20:09.168',
-    day: '화',
+    startDate: '2021-04-22',
+    times: 20,
+    day: getDayOfWeek('2021-04-22'),
     limitUserNumber: 5,
     MasterId: masterId,
     coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -87,9 +88,9 @@ export async function createDummyClubDataForTest(masterId) {
       price: 50000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      startDate: '2021-04-18 11:20:09.168',
-      endDate: '2021-04-30 14:20:09.168',
-      day: '금',
+      startDate: '2021-04-18',
+      times: 6,
+      day: getDayOfWeek('2021-04-18'),
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -101,9 +102,9 @@ export async function createDummyClubDataForTest(masterId) {
       price: 50000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      startDate: '2021-04-07 14:20:09.168',
-      endDate: '2021-04-22 11:20:09.168',
-      day: '금',
+      startDate: '2021-04-07',
+      times: 8,
+      day: getDayOfWeek('2021-04-07'),
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -115,9 +116,9 @@ export async function createDummyClubDataForTest(masterId) {
       price: 50000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      startDate: '2021-04-07 14:20:09.168',
-      endDate: '2021-04-30 14:20:09.168',
-      day: '목',
+      startDate: '2021-04-07',
+      times: 10,
+      day: getDayOfWeek('2021-04-07'),
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
@@ -129,9 +130,9 @@ export async function createDummyClubDataForTest(masterId) {
       price: 50000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      startDate: '2021-04-26 14:20:09.168',
-      endDate: '2021-04-30 14:20:09.168',
-      day: '수',
+      startDate: '2021-04-26',
+      times: 1,
+      day: getDayOfWeek('2021-04-26'),
       limitUserNumber: 6,
       MasterId: masterId,
       coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,

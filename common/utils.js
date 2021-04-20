@@ -14,3 +14,5 @@ export const generateToken = (id, email, username, type) => {
     },
   );
 };
+const week = ['일', '월', '화', '수', '목', '금', '토'];
+export const getDayOfWeek = date => week[new Date(date).getDay()];
