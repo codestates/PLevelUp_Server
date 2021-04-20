@@ -15,10 +15,11 @@ module.exports = {
     timezone: '+09:00',
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    username: process.env.RDB_USER,
+    password: process.env.RDB_PASSWORD,
     database: 'p_level_up',
-    host: process.env.DB_HOST,
+    host: process.env.RDB_HOST,
+    port: process.env.RDB_PORT,
     dialect: 'mysql',
     dialectOptions: {
       useUTC: true,
