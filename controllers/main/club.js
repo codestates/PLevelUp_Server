@@ -4,6 +4,7 @@ import sanitizeHtml from 'sanitize-html';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
 const { Bookmark } = sequelize.models;
+const { Apply } = sequelize.models;
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
 const clubListEllipsis = (body, limit) => {
   const filtered = sanitizeHtml(body, {
@@ -91,9 +92,11 @@ export default {
             description: clubListEllipsis(club.description, -1),
             isBookmark: club.Bookmarked.length === 1,
             isOnline: club.place === '온라인',
-            isNew: checkDateVsNow(club.startDate, true) < 7,
-            isMostEnd: checkDateVsNow(club.endDate, false) < 7,
-            isEnd: checkDateVsNow(club.endDate, false) < 0,
+            isNew: checkDateVsNow(club.createdAt, true) < 7,
+            isMostEnd:
+              checkDateVsNow(club.startDate, false) > 0 &&
+              checkDateVsNow(club.startDate, false) < 7,
+            isEnd: checkDateVsNow(club.startDate, false) < 0,
             isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
@@ -109,6 +112,8 @@ export default {
   },
   read: async (req, res) => {
     const { id } = req.params;
+    const userId = res.user ? res.user.id : null;
+
     const exists = await Club.count({ where: { id: id } });
     if (exists === 0) {
       res.sendStatus(400); // Bad Request
@@ -125,6 +130,10 @@ export default {
           {
             model: Bookmark,
             attributes: ['UserId'],
+            required: false,
+            where: {
+              UserId: userId,
+            },
           },
         ],
         where: { id: id },
@@ -134,8 +143,20 @@ export default {
         club.status = 404; // Not Found
         return;
       }
-      res.masterClub = club;
-      res.status(200).send(res.masterClub);
+      const currentUserNumber = await Apply.count({ where: { ClubId: id } });
+      const data = club.toJSON();
+      data.isBookmark = club.Bookmarked.length === 1;
+      data.isNew = checkDateVsNow(club.createdAt, true) < 7;
+      data.isMostEnd =
+        checkDateVsNow(club.startDate, false) > 0 &&
+        checkDateVsNow(club.startDate, false) < 7;
+      data.isEnd = checkDateVsNow(club.startDate, false) < 0;
+      data.isFourLimitNumber = club.limitUserNumber === 4;
+      data.currentUserNumber = currentUserNumber;
+      delete data.Bookmarked;
+
+      res.masterClub = club; //* res.masterClub 에 club을 등록? data를 등록?
+      res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
