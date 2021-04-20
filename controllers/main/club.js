@@ -26,6 +26,9 @@ const checkDateVsNow = (date, isNew) => {
     );
   }
 };
+const checkEnd = (startDate, times) => {
+  return new Date(startDate + (times + 1) * 24 * 60 * 60 * 1000) > new Date();
+};
 
 export default {
   list: async (req, res) => {
@@ -92,11 +95,10 @@ export default {
             description: clubListEllipsis(club.description, -1),
             isBookmark: club.Bookmarked.length === 1,
             isOnline: club.place === '온라인',
-            isNew: checkDateVsNow(club.createdAt, true) < 7,
-            isMostEnd:
-              checkDateVsNow(club.startDate, false) > 0 &&
-              checkDateVsNow(club.startDate, false) < 7,
-            isEnd: checkDateVsNow(club.startDate, false) < 0,
+            isNew: checkDateVsNow(club.createAt, true) < 7,
+            isMostStart: checkDateVsNow(club.startDate, false) < 7,
+            isStart: checkDateVsNow(club.startDate, false) < 0,
+            isEnd: checkEnd(club.startDate, club.times),
             isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
