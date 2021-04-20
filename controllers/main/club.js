@@ -109,6 +109,8 @@ export default {
   },
   read: async (req, res) => {
     const { id } = req.params;
+    const userId = res.user ? res.user.id : null;
+
     const exists = await Club.count({ where: { id: id } });
     if (exists === 0) {
       res.sendStatus(400); // Bad Request
@@ -125,6 +127,10 @@ export default {
           {
             model: Bookmark,
             attributes: ['UserId'],
+            required: false,
+            where: {
+              UserId: userId,
+            },
           },
         ],
         where: { id: id },
@@ -134,8 +140,13 @@ export default {
         club.status = 404; // Not Found
         return;
       }
-      res.masterClub = club;
-      res.status(200).send(res.masterClub);
+
+      const data = club.toJSON();
+      data.isBookmark = club.Bookmarked.length === 1;
+      delete data.Bookmarked;
+
+      res.masterClub = club; //* res.masterClub 에 club을 등록? data를 등록?
+      res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
