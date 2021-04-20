@@ -1,6 +1,7 @@
 import Club from './models/club';
 import Master from './models/master';
 import bcrypt from 'bcrypt';
+import { SERVER_HOST } from './app';
 
 export async function createDefaultMaster() {
   const hashedPassword = await bcrypt.hash('12341234', 10);
@@ -26,7 +27,7 @@ export async function createDummyClubData(masterId) {
     day: '금',
     limitUserNumber: 6,
     MasterId: masterId,
-    coverUrl: '/img/sampleDummyCoverUrl.png',
+    coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
   }));
 
   const clubs2 = [...Array(15).keys()].map(i => ({
@@ -41,7 +42,7 @@ export async function createDummyClubData(masterId) {
     day: '월',
     limitUserNumber: 4,
     MasterId: masterId,
-    coverUrl: '/img/sampleDummyCoverUrl.png',
+    coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
   }));
   const clubs3 = [...Array(15).keys()].map(i => ({
     title: `증권가의 여의도${i + 1}`,
@@ -55,7 +56,7 @@ export async function createDummyClubData(masterId) {
     day: '수',
     limitUserNumber: 10,
     MasterId: masterId,
-    coverUrl: '/img/sampleDummyCoverUrl.png',
+    coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
   }));
   const clubs4 = [...Array(15).keys()].map(i => ({
     title: `개발의 판교${i + 1}`,
@@ -69,13 +70,14 @@ export async function createDummyClubData(masterId) {
     day: '화',
     limitUserNumber: 5,
     MasterId: masterId,
-    coverUrl: '/img/sampleDummyCoverUrl.png',
+    coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
   }));
   await Club.bulkCreate(clubs1);
   await Club.bulkCreate(clubs2);
   await Club.bulkCreate(clubs3);
   await Club.bulkCreate(clubs4);
 }
+
 export async function createDummyClubDataForTest(masterId) {
   const clubs = [
     {
@@ -90,7 +92,7 @@ export async function createDummyClubDataForTest(masterId) {
       day: '금',
       limitUserNumber: 6,
       MasterId: masterId,
-      coverUrl: '/img/sampleDummyCoverUrl.png',
+      coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
     },
     {
       title: `(마감임박)스타트업DNA`,
@@ -104,7 +106,7 @@ export async function createDummyClubDataForTest(masterId) {
       day: '금',
       limitUserNumber: 6,
       MasterId: masterId,
-      coverUrl: '/img/sampleDummyCoverUrl.png',
+      coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
     },
     {
       title: `(normal)스타트업DNA`,
@@ -118,7 +120,7 @@ export async function createDummyClubDataForTest(masterId) {
       day: '목',
       limitUserNumber: 6,
       MasterId: masterId,
-      coverUrl: '/img/sampleDummyCoverUrl.png',
+      coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
     },
     {
       title: `(place)스타트업DNA`,
@@ -132,7 +134,7 @@ export async function createDummyClubDataForTest(masterId) {
       day: '수',
       limitUserNumber: 6,
       MasterId: masterId,
-      coverUrl: '/img/sampleDummyCoverUrl.png',
+      coverUrl: `${SERVER_HOST}/img/sampleDummyCoverUrl.png`,
     },
   ];
   await Club.bulkCreate(clubs);

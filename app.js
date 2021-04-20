@@ -16,7 +16,7 @@ import passport from 'passport';
 
 dotenv.config();
 const app = express();
-const { PORT, COOKIE_SECRET, NODE_ENV } = process.env;
+const { PORT, COOKIE_SECRET, NODE_ENV, HOST } = process.env;
 
 sequelize
   .sync({ force: false })
@@ -60,7 +60,7 @@ app.use(cookieParser(COOKIE_SECRET));
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://p-levelup.com'],
+    origin: true,
     methods: ['GET', 'POST', 'OPTION', 'DELETE', 'PATCH'],
     exposedHeaders: ['last-page'],
     credentials: true,
@@ -77,8 +77,7 @@ app.get('/', (req, res) => {
 app.use('/api', routes);
 
 const port = PORT || 5000;
+export const SERVER_HOST = `${HOST}:${port}`;
 app.listen(port, () => {
-  console.log(
-    `Server start at http://localhost:${port}` + process.env.NODE_ENV,
-  );
+  console.log(`Server start at ${SERVER_HOST}`);
 });
