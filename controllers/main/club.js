@@ -18,7 +18,7 @@ const clubListEllipsis = (body, limit) => {
 const checkDateVsNow = (date, isNew) => {
   if (isNew) {
     return (
-      (new Date().getTime() - new Date().getTime(date)) / (1000 * 60 * 60 * 24)
+      (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
     );
   } else {
     return (
@@ -26,8 +26,12 @@ const checkDateVsNow = (date, isNew) => {
     );
   }
 };
+
 const checkEnd = (startDate, times) => {
-  return new Date(startDate + (times + 1) * 24 * 60 * 60 * 1000) > new Date();
+  return (
+    new Date(startDate + ((times - 1) * 7 + 1) * 24 * 60 * 60 * 1000) >
+    new Date()
+  );
 };
 
 export default {
