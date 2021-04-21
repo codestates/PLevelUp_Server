@@ -1,6 +1,5 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
-import sanitizeHtml from 'sanitize-html';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
 import { checkDateVsNow, checkEnd, clubListEllipsis } from '../../common/utils';
@@ -49,9 +48,17 @@ export default {
     }
 
     if (req.query.place) {
-      conditions.where = {
-        place: req.query.place,
-      };
+      if (req.query.place === '오프라인') {
+        conditions.where = {
+          place: {
+            [Op.not]: '온라인',
+          },
+        };
+      } else {
+        conditions.where = {
+          place: req.query.place,
+        };
+      }
     }
 
     if (req.query.day) {
@@ -82,15 +89,6 @@ export default {
               Date.now() - 7 * 24 * 60 * 60 * 1000,
             ).toISOString(),
             [Op.lt]: new Date().toISOString(),
-          },
-        };
-      } else if (req.query.filter === 'isMostEnd') {
-        conditions.where = {
-          startdate: {
-            [Op.gt]: new Date().toISOString(),
-            [Op.lt]: new Date(
-              Date.now() + 7 * 24 * 60 * 60 * 1000,
-            ).toISOString(),
           },
         };
       }
