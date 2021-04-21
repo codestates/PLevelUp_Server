@@ -3,36 +3,10 @@ import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
+import { checkDateVsNow, checkEnd, clubListEllipsis } from '../../common/utils';
 const { Bookmark } = sequelize.models;
 const { Apply } = sequelize.models;
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
-const clubListEllipsis = (body, limit) => {
-  const filtered = sanitizeHtml(body, {
-    allowedTags: [],
-  });
-  return filtered.length < limit || limit === -1
-    ? filtered
-    : `${filtered.slice(0, limit)}...`;
-};
-
-const checkDateVsNow = (date, isNew) => {
-  if (isNew) {
-    return (
-      (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-    );
-  } else {
-    return (
-      (new Date(date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-    );
-  }
-};
-
-const checkEnd = (startDate, times) => {
-  return (
-    new Date(startDate + ((times - 1) * 7 + 1) * 24 * 60 * 60 * 1000) >
-    new Date()
-  );
-};
 
 export default {
   list: async (req, res) => {
