@@ -39,60 +39,46 @@ export default {
       ],
     };
 
+    const where = {};
+
     if (req.query.search) {
-      conditions.where = {
-        title: {
-          [Op.like]: '%' + req.query.search + '%',
-        },
+      where.title = {
+        [Op.like]: '%' + req.query.search + '%',
       };
     }
 
     if (req.query.place) {
       if (req.query.place === '오프라인') {
-        conditions.where = {
-          place: {
-            [Op.not]: '온라인',
-          },
-        };
+        where.place = { [Op.not]: '온라인' };
       } else {
-        conditions.where = {
-          place: req.query.place,
-        };
+        where.place = req.query.place;
       }
     }
 
     if (req.query.day) {
-      conditions.where = {
-        day: req.query.day,
-      };
+      where.day = req.query.day;
     }
-
+    console.log('qwer', conditions);
     if (req.query.limitNumber) {
       if (req.query.limitNumber === '7') {
-        conditions.where = {
-          limitUserNumber: {
-            [Op.gt]: parseInt(req.query.limitNumber, 10),
-          },
+        where.limitUserNumber = {
+          [Op.gt]: parseInt(req.query.limitNumber, 10),
         };
       } else {
-        conditions.where = {
-          limitUserNumber: parseInt(req.query.limitNumber, 10),
+        where.limitUserNumber = parseInt(req.query.limitNumber, 10);
+      }
+    }
+    if (req.query.filter) {
+      if (req.query.filter === 'isNew') {
+        where.createdAt = {
+          [Op.gt]: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          [Op.lt]: new Date().toISOString(),
         };
       }
     }
 
-    if (req.query.filter) {
-      if (req.query.filter === 'isNew') {
-        conditions.where = {
-          createdAt: {
-            [Op.gt]: new Date(
-              Date.now() - 7 * 24 * 60 * 60 * 1000,
-            ).toISOString(),
-            [Op.lt]: new Date().toISOString(),
-          },
-        };
-      }
-    }
+    conditions.where = where;
+
     try {
       const clubs = await Club.findAll(conditions);
       const clubsCount = await Club.count(conditions);
