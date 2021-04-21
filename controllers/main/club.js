@@ -200,15 +200,48 @@ export default {
   },
   getbookmark: async (req, res) => {
     try {
-      const { user } = res;
-      const ClubList = await Club.findAll({
-        include: {
-          model: Bookmark,
-          attributes: [],
-          where: { userId: user.id },
-        },
+      const userId = res.user ? res.user.id : null;
+      const clubList = await Club.findAll({
+        include: [
+          {
+            model: Master,
+            attributes: ['id', 'email', 'username'],
+          },
+          {
+            model: Bookmark,
+            attributes: ['UserId'],
+            // required: false,
+            where: {
+              UserId: userId,
+            },
+          },
+        ],
       });
-      res.status(200).send(ClubList);
+
+      const data = clubList
+        .map(club => club.toJSON())
+        .map(club => {
+          return {
+            ...club,
+            description: clubListEllipsis(club.description, -1),
+            isBookmark: club.Bookmarked.length === 1,
+            isOnline: club.place === '온라인',
+            isNew: checkDateVsNow(club.createdAt, true) < 7,
+            isMostStart:
+              checkDateVsNow(club.startDate, false) > 0 &&
+              checkDateVsNow(club.startDate, false) < 7,
+            isStart: checkDateVsNow(club.startDate, false) < 0,
+            isEnd: checkEnd(club.startDate, club.times),
+            isFourLimitNumber: club.limitUserNumber === 4,
+            currentUserNumber: club.currentUserNumber,
+          };
+        })
+        .map(club => {
+          delete club.Bookmarked;
+          return club;
+        });
+
+      res.status(200).send(data);
     } catch (e) {
       console.log(e);
       res.status(500).send(e.toString());
