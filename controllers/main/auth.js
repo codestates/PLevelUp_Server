@@ -4,6 +4,9 @@ import bcrypt from 'bcrypt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { generateToken } from '../../common/utils';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default {
   //회원가입
@@ -181,6 +184,51 @@ export default {
       res.status(200).send(data);
     } catch (e) {
       res.status(500).json(e.toString());
+    }
+  },
+  findPassword: async (req, res) => {
+    const { email } = req.body;
+    try {
+      //임시비밀번호 생성
+      const temporaryPassword = Math.random().toString(36).slice(2);
+
+      //임시비밀번호로 변경
+      const user = await User.findByEmail(email);
+      if (!user) {
+        res.status(401).send('해당 이메일로 가입된 계정이 존재하지 않습니다.');
+      }
+      const hashedTemporaryPassword = await bcrypt.hash(temporaryPassword, 10);
+      await user.update({
+        password: hashedTemporaryPassword,
+        updateAt: new Date(),
+      });
+
+      //메일발송 함수
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        prot: 587,
+        host: 'smtp.gmail.com',
+        secure: false,
+        requireTLS: true,
+        auth: {
+          user: process.env.GMAIL_ADDRESS,
+          pass: process.env.GMAIL_PASSWORD,
+        },
+      });
+
+      //메일옵션
+      const mailOptions = {
+        from: process.env.GMAIL_ADDRESS,
+        to: email,
+        subject: '[P`Levelup]임시 비밀번호 발급 안내',
+        text: `  안녕하세요. P-LevelUp 입니다. ${user.username}님에게 발급된 임시 비밀번호는 [${temporaryPassword}]입니다. 로그인 후 마이페이지를 통해 비밀번호를 변경하여 사용하실 수 있습니다.`,
+      };
+
+      //메일 발송
+      const mail = await transporter.sendMail(mailOptions);
+      res.status(200).json(mail);
+    } catch (e) {
+      res.status(500).send(e.toString());
     }
   },
 };
