@@ -86,6 +86,41 @@ export default {
       };
     }
 
+    if (req.query.limitNumber) {
+      if (req.query.limitNumber === '7') {
+        conditions.where = {
+          limitUserNumber: {
+            [Op.gt]: parseInt(req.query.limitNumber, 10),
+          },
+        };
+      } else {
+        conditions.where = {
+          limitUserNumber: parseInt(req.query.limitNumber, 10),
+        };
+      }
+    }
+
+    if (req.query.filter) {
+      if (req.query.filter === 'isNew') {
+        conditions.where = {
+          createdAt: {
+            [Op.gt]: new Date(
+              Date.now() - 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+            [Op.lt]: new Date().toISOString(),
+          },
+        };
+      } else if (req.query.filter === 'isMostEnd') {
+        conditions.where = {
+          startdate: {
+            [Op.gt]: new Date().toISOString(),
+            [Op.lt]: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+          },
+        };
+      }
+    }
     try {
       const clubs = await Club.findAll(conditions);
       const clubsCount = await Club.count(conditions);
