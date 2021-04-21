@@ -1,6 +1,9 @@
 import Club from '../../models/club';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
+import User from '../../models/user';
+import axios from 'axios';
+import PaymentLog from '../../models/paymentLog';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
 const { Bookmark } = sequelize.models;
@@ -280,6 +283,78 @@ export default {
     } catch (e) {
       console.log(e);
       res.status(500).send(e.toString());
+    }
+  },
+
+  pay: async (req, res) => {
+    try {
+      const { imp_uid, merchant_uid } = req.body;
+
+      const getToken = await axios.post(
+        'https://api.iamport.kr/users/getToken',
+        {
+          imp_key: process.env.IAMPORT_REST_API,
+          imp_secret: process.env.IAMPORT_REST_API_SECRET,
+        },
+        { 'Content-Type': 'application/json' },
+      );
+
+      const { access_token } = getToken.data.response;
+
+      const getPaymentData = await axios.get(
+        `https://api.iamport.kr/payments/${imp_uid}`,
+        {
+          headers: {
+            Authorization: access_token,
+          },
+        },
+      );
+
+      const paymentData = getPaymentData.data.response;
+
+      const order = await Club.findOne({
+        where: { id: paymentData.custom_data },
+      });
+
+      const clubsCount = await Club.count({
+        where: { id: paymentData.custom_data },
+      });
+
+      const { limitUserNumber } = order;
+
+      if (clubsCount >= limitUserNumber) {
+        res.status(400).send('This club is all booked up!');
+        return;
+      }
+      const amountToBePaid = order.price;
+
+      const { amount, status, buyer_email, name, custom_data } = paymentData;
+      const user = await User.findByEmail(buyer_email);
+
+      if (amount === amountToBePaid) {
+        await PaymentLog.create({
+          status: status,
+          title: name,
+          price: amount,
+          ClubId: order.id,
+          UserId: user.id,
+          merchantUid: merchant_uid,
+        });
+
+        const club = await Club.findOne({
+          where: { id: custom_data, status: 'paid' },
+        });
+
+        await club.addApplyClub(user.id);
+        await user.addApplyUser(club.id);
+
+        res.status(200).send(paymentData);
+        return;
+      } else {
+        throw { status: 'forgery', message: '위조된 결제시도' };
+      }
+    } catch (e) {
+      res.status(400).send(e.toString());
     }
   },
 };

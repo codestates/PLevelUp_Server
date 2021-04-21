@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import User from '../../models/user';
+import Club from '../../models/club';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
@@ -145,11 +146,13 @@ export default {
     }
     res.status(200).json(user);
   },
+
   //로그아웃
   logout: async (req, res) => {
     req.logout();
     res.clearCookie('access_token').sendStatus(204); // No Content
   },
+
   //비밀번호변경
   changePassword: async (req, res) => {
     const { password, changePassword } = req.body;
@@ -186,6 +189,26 @@ export default {
       res.status(500).json(e.toString());
     }
   },
+
+  //등록한 클럽내역
+  apply: async (req, res) => {
+    try {
+      const { user } = res;
+      const applyList = await User.findOne({
+        include: [
+          {
+            model: Club,
+            as: 'ApplyUser',
+            through: { where: { userId: user._id } },
+          },
+        ],
+      });
+      res.status(200).send(applyList.ApplyUser);
+    } catch (e) {
+      res.status(400).send(e.toString());
+    }
+  },
+
   findPassword: async (req, res) => {
     const { email } = req.body;
     try {
