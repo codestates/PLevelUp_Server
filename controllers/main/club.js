@@ -308,7 +308,9 @@ export default {
           merchantUid: merchant_uid,
         });
 
-        const club = await Club.findOne({ where: { id: custom_data } });
+        const club = await Club.findOne({
+          where: { id: custom_data, status: 'paid' },
+        });
 
         await club.addApplyClub(user.id);
         await user.addApplyUser(club.id);
