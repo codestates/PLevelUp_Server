@@ -5,7 +5,7 @@ export default {
     try {
       const { user } = res;
       const paymentLog = await PaymentLog.findAll({
-        where: { userId: user._id },
+        where: { UserId: user.id },
       });
       if (!paymentLog) {
         res.status(403).send('결제한 클럽이 존재하지 않습니다.');
