@@ -85,7 +85,27 @@ export default {
         day: req.query.day,
       };
     }
-
+    if (req.query.filter) {
+      if (req.query.filter === 'isNew') {
+        conditions.where = {
+          createdAt: {
+            [Op.gt]: new Date(
+              Date.now() - 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+            [Op.lt]: new Date().toISOString(),
+          },
+        };
+      } else if (req.query.filter === 'isMostEnd') {
+        conditions.where = {
+          startdate: {
+            [Op.gt]: new Date().toISOString(),
+            [Op.lt]: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
+          },
+        };
+      }
+    }
     try {
       const clubs = await Club.findAll(conditions);
       const clubsCount = await Club.count(conditions);
