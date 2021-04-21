@@ -15,5 +15,7 @@ router.get(
 router.get('/login/google/callback', controller.loginGoogle);
 router.get('/islogin', controller.isLogin);
 router.post('/logout', controller.logout);
+router.get('/mypage', controller.apply);
 router.post('/changepassword', controller.changePassword);
+router.post('/findPassword', controller.findPassword);
 export default router;

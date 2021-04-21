@@ -48,7 +48,7 @@ export default class User extends Sequelize.Model {
     db.User.hasMany(db.PaymentLog);
     db.User.belongsToMany(db.Club, {
       through: 'Apply',
-      foreignKey: 'UserId',
+      as: 'ApplyUser',
     });
     db.User.belongsToMany(db.Club, {
       through: 'Bookmark',

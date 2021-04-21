@@ -10,6 +10,9 @@ export default class PaymentLog extends Sequelize.Model {
           allowNull: false,
           defaultValue: Sequelize.NOW,
         },
+        title: { type: Sequelize.STRING, allowNull: false },
+        price: { type: Sequelize.INTEGER, allowNull: false },
+        merchantUid: { type: Sequelize.STRING, allowNull: false },
       },
       {
         sequelize,

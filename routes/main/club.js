@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', controller.list);
 router.get('/:id', controller.read);
-
+router.post('/:id/payment', controller.pay);
 router.post('/getbookmark', mainCheckLoggedIn, controller.getbookmark);
 
 router.post('/addbookmark/:clubId', mainCheckLoggedIn, controller.addbookmark);

@@ -219,18 +219,123 @@ export default {
   },
   getbookmark: async (req, res) => {
     try {
-      const { user } = res;
-      const ClubList = await Club.findAll({
-        include: {
-          model: Bookmark,
-          attributes: [],
-          where: { userId: user.id },
-        },
+      const userId = res.user ? res.user.id : null;
+      const clubList = await Club.findAll({
+        include: [
+          {
+            model: Master,
+            attributes: ['id', 'email', 'username'],
+          },
+          {
+            model: Bookmark,
+            attributes: ['UserId'],
+            // required: false,
+            where: {
+              UserId: userId,
+            },
+          },
+        ],
       });
-      res.status(200).send(ClubList);
+
+      const data = clubList
+        .map(club => club.toJSON())
+        .map(club => {
+          return {
+            ...club,
+            description: clubListEllipsis(club.description, -1),
+            isBookmark: club.Bookmarked.length === 1,
+            isOnline: club.place === '온라인',
+            isNew: checkDateVsNow(club.createdAt, true) < 7,
+            isMostStart:
+              checkDateVsNow(club.startDate, false) > 0 &&
+              checkDateVsNow(club.startDate, false) < 7,
+            isStart: checkDateVsNow(club.startDate, false) < 0,
+            isEnd: checkEnd(club.startDate, club.times),
+            isFourLimitNumber: club.limitUserNumber === 4,
+            currentUserNumber: club.currentUserNumber,
+          };
+        })
+        .map(club => {
+          delete club.Bookmarked;
+          return club;
+        });
+
+      res.status(200).send(data);
     } catch (e) {
       console.log(e);
       res.status(500).send(e.toString());
+    }
+  },
+
+  pay: async (req, res) => {
+    try {
+      const { imp_uid, merchant_uid } = req.body;
+
+      const getToken = await axios.post(
+        'https://api.iamport.kr/users/getToken',
+        {
+          imp_key: process.env.IAMPORT_REST_API,
+          imp_secret: process.env.IAMPORT_REST_API_SECRET,
+        },
+        { 'Content-Type': 'application/json' },
+      );
+
+      const { access_token } = getToken.data.response;
+
+      const getPaymentData = await axios.get(
+        `https://api.iamport.kr/payments/${imp_uid}`,
+        {
+          headers: {
+            Authorization: access_token,
+          },
+        },
+      );
+
+      const paymentData = getPaymentData.data.response;
+
+      const order = await Club.findOne({
+        where: { id: paymentData.custom_data },
+      });
+
+      const clubsCount = await Club.count({
+        where: { id: paymentData.custom_data },
+      });
+
+      const { limitUserNumber } = order;
+
+      if (clubsCount >= limitUserNumber) {
+        res.status(400).send('This club is all booked up!');
+        return;
+      }
+      const amountToBePaid = order.price;
+
+      const { amount, status, buyer_email, name, custom_data } = paymentData;
+      const user = await User.findByEmail(buyer_email);
+
+      if (amount === amountToBePaid) {
+        await PaymentLog.create({
+          status: status,
+          title: name,
+          price: amount,
+          ClubId: order.id,
+          UserId: user.id,
+          merchantUid: merchant_uid,
+        });
+
+        const club = await Club.findOne({
+          where: { id: custom_data, status: 'paid' },
+        });
+
+        await club.addApplyClub(user.id);
+        await user.addApplyUser(club.id);
+
+        res.status(200).send(paymentData);
+        return;
+      } else {
+        throw { status: 'forgery', message: '위조된 결제시도' };
+      }
+    } catch (e) {
+      res.status(400).send(e.toString());
     }
   },
 };
