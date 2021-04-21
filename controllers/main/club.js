@@ -85,6 +85,21 @@ export default {
         day: req.query.day,
       };
     }
+
+    if (req.query.limitNumber) {
+      if (req.query.limitNumber === '7') {
+        conditions.where = {
+          limitUserNumber: {
+            [Op.gt]: parseInt(req.query.limitNumber, 10),
+          },
+        };
+      } else {
+        conditions.where = {
+          limitUserNumber: parseInt(req.query.limitNumber, 10),
+        };
+      }
+    }
+
     if (req.query.filter) {
       if (req.query.filter === 'isNew') {
         conditions.where = {
