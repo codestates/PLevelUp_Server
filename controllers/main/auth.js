@@ -198,7 +198,6 @@ export default {
           },
         ],
       });
-      //console.log('-----------', applyList.ApplyUser);
       res.status(200).send(applyList.ApplyUser);
     } catch (e) {
       res.status(400).send(e.toString());
