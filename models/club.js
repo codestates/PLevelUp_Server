@@ -42,6 +42,10 @@ export default class Club extends Sequelize.Model {
     db.Club.hasMany(db.sequelize.models.Bookmark);
     db.sequelize.models.Bookmark.belongsTo(db.Club);
     db.Club.belongsToMany(db.User, {
+      through: 'Apply',
+      as: 'ApplyClub',
+    });
+    db.Club.belongsToMany(db.User, {
       //club.addBookmarkers , club.removeBookmarkers
       through: 'Bookmark',
       as: 'Bookmarkers',

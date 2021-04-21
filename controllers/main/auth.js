@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import User from '../../models/user';
+import Club from '../../models/club';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
@@ -181,6 +182,26 @@ export default {
       res.status(200).send(data);
     } catch (e) {
       res.status(500).json(e.toString());
+    }
+  },
+
+  //등록한 클럽내역
+  apply: async (req, res) => {
+    try {
+      const { user } = res;
+      const applyList = await User.findOne({
+        include: [
+          {
+            model: Club,
+            as: 'ApplyUser',
+            through: { where: { userId: user._id } },
+          },
+        ],
+      });
+      //console.log('-----------', applyList.ApplyUser);
+      res.status(200).send(applyList.ApplyUser);
+    } catch (e) {
+      res.status(400).send(e.toString());
     }
   },
 };

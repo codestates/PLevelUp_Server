@@ -20,7 +20,7 @@ export async function createDummyClubData(masterId) {
     title: `스타트업DNA${i + 1}`,
     summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
     place: '온라인',
-    price: 50000,
+    price: 1000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     startDate: '2021-04-07',
@@ -35,7 +35,7 @@ export async function createDummyClubData(masterId) {
     title: `강남의 강남${i + 1}`,
     summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
     place: '강남',
-    price: 50000,
+    price: 1000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     startDate: '2021-04-22',
@@ -49,7 +49,7 @@ export async function createDummyClubData(masterId) {
     title: `증권가의 여의도${i + 1}`,
     summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
     place: '여의도',
-    price: 50000,
+    price: 1000,
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     startDate: '2021-05-01',
@@ -85,7 +85,7 @@ export async function createDummyClubDataForTest(masterId) {
       title: `(new)스타트업DNA`,
       summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
       place: '강남',
-      price: 50000,
+      price: 1000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       startDate: '2021-04-18',
@@ -113,7 +113,7 @@ export async function createDummyClubDataForTest(masterId) {
       title: `(normal)스타트업DNA`,
       summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
       place: '강남',
-      price: 50000,
+      price: 1000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       startDate: '2021-04-07',
@@ -127,7 +127,7 @@ export async function createDummyClubDataForTest(masterId) {
       title: `(place)스타트업DNA`,
       summary: '스타트업에서 빠르게 성장하는 사람들의 비밀',
       place: '여의도',
-      price: 50000,
+      price: 1000,
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       startDate: '2021-04-26',
