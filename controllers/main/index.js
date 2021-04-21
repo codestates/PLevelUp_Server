@@ -1,9 +1,11 @@
 import Master from '../../models/master';
 import { Op } from 'sequelize';
 import Club from '../../models/club';
-import { checkDateVsNow, deepCopy } from '../../common/utils';
+import { checkDateVsNow, checkEnd, deepCopy } from '../../common/utils';
 import { sequelize } from '../../models';
 const { Bookmark } = sequelize.models;
+const { Apply } = sequelize.models;
+
 export default {
   landingList: async (req, res) => {
     // 한페이지에 몇개씩 ?
@@ -49,12 +51,9 @@ export default {
       },
     };
 
-    const isMostEndConditions = deepCopy(conditions);
-    isMostEndConditions.where = {
-      startdate: {
-        [Op.gt]: new Date().toISOString(),
-        [Op.lt]: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      },
+    const gangnamConditions = deepCopy(conditions);
+    gangnamConditions.where = {
+      place: '강남',
     };
 
     const isFourLimitConditions = deepCopy(conditions);
@@ -67,33 +66,45 @@ export default {
 
       clubsList.push(await Club.findAll(onlineConditions));
       clubsList.push(await Club.findAll(isNewConditions));
-      clubsList.push(await Club.findAll(isMostEndConditions));
+      clubsList.push(await Club.findAll(gangnamConditions));
       clubsList.push(await Club.findAll(isFourLimitConditions));
 
       const data = clubsList.map(clubs =>
         clubs
           .map(club => club.toJSON())
           .map(club => {
+            const currentUserNumber = Apply.count({
+              where: { ClubId: club.id },
+            });
             return {
               ...club,
               isBookmark: club.Bookmarked.length === 1,
               isOnline: club.place === '온라인',
-              isNew: checkDateVsNow(club.startDate, true) < 7,
-              isMostEnd: checkDateVsNow(club.endDate, false) < 7,
-              isEnd: checkDateVsNow(club.endDate, false) < 0,
+              isNew: checkDateVsNow(club.createdAt, true) < 7,
+              isMostStart:
+                0 < checkDateVsNow(club.startDate, false) < 7 ||
+                club.limitUserNumber <= currentUserNumber + 3,
+              isStart:
+                (checkDateVsNow(club.startDate, false) < 0 &&
+                  !checkEnd(club.startDate, club.times)) ||
+                club.limitUserNumber <= currentUserNumber,
+              isEnd: checkEnd(club.startDate, club.times),
               isFourLimitNumber: club.limitUserNumber === 4,
             };
           })
           .map(club => {
             delete club.Bookmarked;
             delete club.description;
+            if (club.isStart && club.isMostStart) {
+              club.isMostStart = false;
+            }
             return club;
           }),
       );
       res.status(200).json({
         onlineList: data[0],
         newList: data[1],
-        mostEndList: data[2],
+        gangnamList: data[2],
         fourLimitList: data[3],
       });
     } catch (e) {
