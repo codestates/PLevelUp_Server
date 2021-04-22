@@ -1,6 +1,8 @@
 import Club from '../../models/club';
-import PaymentLog from '../../models/paymentLog';
+import User from '../../models/user';
 import Master from '../../models/master';
+import PaymentLog from '../../models/paymentLog';
+import axios from 'axios';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
 import { checkDateVsNow, checkEnd, clubListEllipsis } from '../../common/utils';
@@ -294,6 +296,7 @@ export default {
         res.status(400).send('This club is all booked up!');
         return;
       }
+
       const amountToBePaid = order.price;
 
       const { amount, status, buyer_email, name, custom_data } = paymentData;
@@ -310,7 +313,7 @@ export default {
         });
 
         const club = await Club.findOne({
-          where: { id: custom_data, status: 'paid' },
+          where: { id: custom_data },
         });
 
         await club.addApplyClub(user.id);
