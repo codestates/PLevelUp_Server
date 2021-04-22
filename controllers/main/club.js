@@ -1,4 +1,5 @@
 import Club from '../../models/club';
+import PaymentLog from '../../models/paymentLog';
 import Master from '../../models/master';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
