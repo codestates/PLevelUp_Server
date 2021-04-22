@@ -199,7 +199,7 @@ export default {
           {
             model: Club,
             as: 'ApplyUser',
-            through: { where: { userId: user._id } },
+            through: { where: { UserId: user.id } },
           },
         ],
       });
