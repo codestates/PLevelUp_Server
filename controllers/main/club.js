@@ -157,13 +157,20 @@ export default {
       const data = club.toJSON();
       data.isBookmark = club.Bookmarked.length === 1;
       data.isNew = checkDateVsNow(club.createdAt, true) < 7;
-      data.isMostEnd =
-        checkDateVsNow(club.startDate, false) > 0 &&
-        checkDateVsNow(club.startDate, false) < 7;
-      data.isEnd = checkDateVsNow(club.startDate, false) < 0;
+      (data.isMostStart =
+        0 < checkDateVsNow(club.startDate, false) < 7 ||
+        club.limitUserNumber <= currentUserNumber + 3),
+        (data.isStart =
+          (checkDateVsNow(club.startDate, false) < 0 &&
+            !checkEnd(club.startDate, club.times)) ||
+          club.limitUserNumber <= currentUserNumber);
+      data.isEnd = checkEnd(club.startDate, club.times);
       data.isFourLimitNumber = club.limitUserNumber === 4;
       data.currentUserNumber = currentUserNumber;
       delete data.Bookmarked;
+      if (data.isStart && data.isMostStart) {
+        data.isMostStart = false;
+      }
 
       res.status(200).send(data);
     } catch (e) {
