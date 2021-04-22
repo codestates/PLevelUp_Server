@@ -165,7 +165,6 @@ export default {
       data.currentUserNumber = currentUserNumber;
       delete data.Bookmarked;
 
-      res.masterClub = club; //* res.masterClub 에 club을 등록? data를 등록?
       res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
