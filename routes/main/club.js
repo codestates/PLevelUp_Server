@@ -8,11 +8,10 @@ router.get('/', controller.list);
 router.get('/:id', controller.read);
 router.post('/:id/payment', controller.pay);
 router.post('/getbookmark', mainCheckLoggedIn, controller.getbookmark);
-
-router.post('/addbookmark/:clubId', mainCheckLoggedIn, controller.addbookmark);
-router.delete(
-  '/removebookmark/:clubId',
+router.post(
+  '/updatebookmark/:clubId',
   mainCheckLoggedIn,
-  controller.removebookmark,
+  controller.updateBookmark,
 );
+
 export default router;

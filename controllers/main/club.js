@@ -61,7 +61,6 @@ export default {
     if (req.query.day) {
       where.day = req.query.day;
     }
-    console.log('qwer', conditions);
     if (req.query.limitNumber) {
       if (req.query.limitNumber === '7') {
         where.limitUserNumber = {
@@ -161,48 +160,50 @@ export default {
       const data = club.toJSON();
       data.isBookmark = club.Bookmarked.length === 1;
       data.isNew = checkDateVsNow(club.createdAt, true) < 7;
-      data.isMostEnd =
-        checkDateVsNow(club.startDate, false) > 0 &&
-        checkDateVsNow(club.startDate, false) < 7;
-      data.isEnd = checkDateVsNow(club.startDate, false) < 0;
+      (data.isMostStart =
+        0 < checkDateVsNow(club.startDate, false) < 7 ||
+        club.limitUserNumber <= currentUserNumber + 3),
+        (data.isStart =
+          (checkDateVsNow(club.startDate, false) < 0 &&
+            !checkEnd(club.startDate, club.times)) ||
+          club.limitUserNumber <= currentUserNumber);
+      data.isEnd = checkEnd(club.startDate, club.times);
       data.isFourLimitNumber = club.limitUserNumber === 4;
       data.currentUserNumber = currentUserNumber;
       delete data.Bookmarked;
+      if (data.isStart && data.isMostStart) {
+        data.isMostStart = false;
+      }
 
-      res.masterClub = club; //* res.masterClub 에 club을 등록? data를 등록?
       res.status(200).send(data);
     } catch (e) {
       res.status(500).send(e.toString());
     }
   },
-  addbookmark: async (req, res) => {
-    // POST /api/main/club/bookmark/1
+  updateBookmark: async (req, res) => {
     try {
       const { user } = res; // 로그인한 user를 가져옴
       const { clubId } = req.params;
+
       const club = await Club.findOne({ where: { id: clubId } }); // 북마크요청된 클럽을 가져옴
       if (!club) {
         res.status(403).send('클럽이 존재하지 않습니다.');
       }
-      await club.addBookmarkers(user.id);
-      res.status(200).send({ ClubId: club.id, UserId: user.id });
+
+      const { isBookmark } = req.body;
+      if (!isBookmark && isBookmark !== false) {
+        res.sendStatus(400);
+      }
+
+      if (isBookmark) {
+        await club.addBookmarkers(user.id);
+      } else {
+        await club.removeBookmarkers(user.id);
+      }
+
+      res.status(200).send({ clubId: club.id, userId: user.id, isBookmark });
     } catch (e) {
       console.log(e);
-      res.status(500).send(e.toString());
-    }
-  },
-  removebookmark: async (req, res) => {
-    // DELETE /api/main/club/bookmark/1
-    try {
-      const { user } = res;
-      const { clubId } = req.params;
-      const club = await Club.findOne({ where: { id: clubId } });
-      if (!club) {
-        res.status(403).send('클럽이 존재하지 않습니다.');
-      }
-      await club.removeBookmarkers(user.id);
-      res.status(200).json({ ClubId: club.id, UserId: user.id });
-    } catch (e) {
       res.status(500).send(e.toString());
     }
   },
