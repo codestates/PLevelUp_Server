@@ -170,34 +170,30 @@ export default {
       res.status(500).send(e.toString());
     }
   },
-  addbookmark: async (req, res) => {
-    // POST /api/main/club/bookmark/1
+  updateBookmark: async (req, res) => {
     try {
       const { user } = res; // 로그인한 user를 가져옴
       const { clubId } = req.params;
+
       const club = await Club.findOne({ where: { id: clubId } }); // 북마크요청된 클럽을 가져옴
       if (!club) {
         res.status(403).send('클럽이 존재하지 않습니다.');
       }
-      await club.addBookmarkers(user.id);
-      res.status(200).send({ ClubId: club.id, UserId: user.id });
+
+      const { isBookmark } = req.body;
+      if (!isBookmark && isBookmark !== false) {
+        res.sendStatus(400);
+      }
+
+      if (isBookmark) {
+        await club.addBookmarkers(user.id);
+      } else {
+        await club.removeBookmarkers(user.id);
+      }
+
+      res.status(200).send({ clubId: club.id, userId: user.id, isBookmark });
     } catch (e) {
       console.log(e);
-      res.status(500).send(e.toString());
-    }
-  },
-  removebookmark: async (req, res) => {
-    // DELETE /api/main/club/bookmark/1
-    try {
-      const { user } = res;
-      const { clubId } = req.params;
-      const club = await Club.findOne({ where: { id: clubId } });
-      if (!club) {
-        res.status(403).send('클럽이 존재하지 않습니다.');
-      }
-      await club.removeBookmarkers(user.id);
-      res.status(200).json({ ClubId: club.id, UserId: user.id });
-    } catch (e) {
       res.status(500).send(e.toString());
     }
   },
