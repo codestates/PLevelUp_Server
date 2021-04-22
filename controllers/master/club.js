@@ -2,7 +2,14 @@ import Club from '../../models/club';
 import Joi from 'joi';
 import Master from '../../models/master';
 import sanitizeHtml from 'sanitize-html';
-import { getDayOfWeek } from '../../common/utils';
+import {
+  checkDateVsNow,
+  checkEnd,
+  clubListEllipsis,
+  getDayOfWeek,
+} from '../../common/utils';
+import { sequelize } from '../../models';
+const { Apply } = sequelize.models;
 
 const sanitizeOption = {
   allowedTags: [
@@ -67,15 +74,6 @@ export const checkOwnClub = (req, res, next) => {
     return;
   }
   return next();
-};
-// html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
-const clubListEllipsis = (body, limit) => {
-  const filtered = sanitizeHtml(body, {
-    allowedTags: [],
-  });
-  return filtered.length < limit || limit === -1
-    ? filtered
-    : `${filtered.slice(0, limit)}...`;
 };
 
 export default {
@@ -144,30 +142,54 @@ export default {
       res.sendStatus(400);
       return;
     }
+
+    const conditions = {
+      limit: perPage,
+      order: [['id', 'DESC']],
+      offset: (page - 1) * perPage,
+      include: [
+        {
+          model: Master,
+          attributes: ['id', 'email', 'username'],
+        },
+      ],
+      where: { MasterId: master._id },
+    };
+
     try {
-      const clubs = await Club.findAll({
-        limit: perPage,
-        order: [['id', 'DESC']],
-        offset: (page - 1) * perPage,
-        where: { MasterId: master._id },
-        include: [
-          {
-            model: Master,
-            attributes: ['id', 'email', 'username'],
-          },
-        ],
-      });
-      const clubsCount = await Club.count();
+      const clubs = await Club.findAll(conditions);
+      const clubsCount = await Club.count(conditions);
 
       // 헤더에 last-page 같이 보내줌
       res.set('last-page', Math.ceil(clubsCount / perPage));
       const data = clubs
         .map(club => club.toJSON())
         .map(club => {
+          const currentUserNumber = Apply.count({
+            where: { ClubId: club.id },
+          });
+
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
+            isOnline: club.place === '온라인',
+            isNew: checkDateVsNow(club.createdAt, true) < 7,
+            isMostStart:
+              0 < checkDateVsNow(club.startDate, false) < 7 ||
+              club.limitUserNumber <= currentUserNumber + 3,
+            isStart:
+              (checkDateVsNow(club.startDate, false) < 0 &&
+                !checkEnd(club.startDate, club.times)) ||
+              club.limitUserNumber <= currentUserNumber,
+            isEnd: checkEnd(club.startDate, club.times),
+            isFourLimitNumber: club.limitUserNumber === 4,
           };
+        })
+        .map(club => {
+          if (club.isStart && club.isMostStart) {
+            club.isMostStart = false;
+          }
+          return club;
         });
       res.status(200).send(data);
     } catch (e) {
