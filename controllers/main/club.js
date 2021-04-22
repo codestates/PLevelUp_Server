@@ -58,7 +58,6 @@ export default {
     if (req.query.day) {
       where.day = req.query.day;
     }
-    console.log('qwer', conditions);
     if (req.query.limitNumber) {
       if (req.query.limitNumber === '7') {
         where.limitUserNumber = {
