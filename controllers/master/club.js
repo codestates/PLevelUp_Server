@@ -17,6 +17,8 @@ const sanitizeOption = {
     'h2',
     'b',
     'i',
+    'em',
+    'strong',
     'u',
     's',
     'p',
