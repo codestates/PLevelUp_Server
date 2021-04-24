@@ -57,7 +57,7 @@ export default class Master extends Sequelize.Model {
     return jwt.sign(
       // 첫 번째 파라미터에는 토큰 안에 집어넣고 싶은 데이터
       {
-        _id: this.id,
+        id: this.id,
         email: this.email,
         username: this.username,
       },

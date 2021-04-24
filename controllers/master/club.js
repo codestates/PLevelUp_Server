@@ -71,7 +71,7 @@ export const checkOwnClub = (req, res, next) => {
   // id 로 찾은 클럽이 로그인 중인 마스터가 작성한 클럽인지 확인
   const master = res.master,
     club = res.masterClub;
-  if (club.MasterId.toString() !== master._id.toString()) {
+  if (club.MasterId.toString() !== master.id.toString()) {
     res.sendStatus(403); // Forbidden
     return;
   }
@@ -123,7 +123,7 @@ export default {
         times: times,
         day: day,
         limitUserNumber: limitUserNumber,
-        MasterId: res.master._id,
+        MasterId: res.master.id,
         coverUrl: coverUrl,
       });
       club.updatedAt = null;
@@ -155,7 +155,7 @@ export default {
           attributes: ['id', 'email', 'username'],
         },
       ],
-      where: { MasterId: master._id },
+      where: { MasterId: master.id },
     };
 
     try {
