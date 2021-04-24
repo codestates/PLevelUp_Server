@@ -41,7 +41,12 @@ if (process.env.NODE_ENV === 'production') {
     limits: { fileSize: 5 * 1024 * 1024 },
   });
   router.post('/img', upload.single('img'), (req, res) => {
-    res.json({ url: req.file.location });
+    try {
+      res.json({ url: req.file.location });
+    } catch (e) {
+      console.log(e.toString());
+      res.status(500).send(e.toString());
+    }
   });
 } else {
   const upload = multer({
@@ -57,7 +62,12 @@ if (process.env.NODE_ENV === 'production') {
     limits: { fileSize: 5 * 1024 * 1024 },
   });
   router.post('/img', upload.single('img'), (req, res) => {
-    res.json({ url: `${SERVER_HOST}/img/${req.file.filename}` });
+    try {
+      res.json({ url: `${SERVER_HOST}/img/${req.file.filename}` });
+    } catch (e) {
+      console.log(e.toString());
+      res.status(500).send(e.toString());
+    }
   });
 }
 

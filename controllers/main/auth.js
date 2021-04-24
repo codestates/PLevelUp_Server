@@ -137,7 +137,6 @@ export default {
   },
   //로그인 상태확인
   isLogin: async (req, res) => {
-    console.log('qwerqwer', res.user);
     const { user } = res;
     if (!user) {
       // 로그인 중 아님
