@@ -13,8 +13,6 @@ export default function PassPortGoogleStrategy() {
         callbackURL: '/api/main/auth/login/google/callback', // 콜백 URL
       },
       async (accessToken, refreshToken, profile, done) => {
-        console.log('Google profile', profile);
-        console.log('Google profile222', accessToken);
         try {
           const exUser = await User.findOne({
             where: { snsId: profile.id, type: 'google' },

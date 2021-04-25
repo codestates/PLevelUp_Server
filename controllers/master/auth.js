@@ -41,7 +41,6 @@ export default {
         .status(200)
         .cookie('master_access_token', token, {
           maxAge: 1000 * 60 * 60 * 24 * 1,
-          httpOnly: true,
         })
         .send(data);
     } catch (e) {
@@ -80,7 +79,6 @@ export default {
         .status(200)
         .cookie('master_access_token', token, {
           maxAge: 1000 * 60 * 60 * 24 * 1, // 1일
-         httpOnly: true,
         })
         .send(data);
     } catch (e) {

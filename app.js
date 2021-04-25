@@ -58,23 +58,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
 
-if (NODE_ENV === 'development') {
-  app.use(
-    cors({
-      origin: `${HOST}:3000`,
-      exposedHeaders: ['last-page'],
-      credentials: true,
-    }),
-  );
-} else if (NODE_ENV === 'production') {
-  app.use(
-    cors({
-      origin: 'https:p-levelup.com',
-      exposedHeaders: ['last-page'],
-      credentials: true,
-    }),
-  );
-}
+export const CLIENT_HOST =
+  NODE_ENV === 'production' ? 'https://p-levelup.com' : `${HOST}:3000`;
+app.use(
+  cors({
+    origin: CLIENT_HOST,
+    exposedHeaders: ['last-page'],
+    credentials: true,
+  }),
+);
 
 app.use(passport.initialize());
 app.use(jwtMiddleware);
@@ -85,13 +77,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', routes);
-
 const port = PORT || 5000;
-export const SERVER_HOST = `${HOST}:${port}`;
+export const SERVER_HOST =
+  NODE_ENV === 'production' ? 'https://api.p-levelup.com' : `${HOST}:${port}`;
 app.listen(port, () => {
-  if (NODE_ENV === 'production') {
-    console.log(`Server start at production Host`);
-  } else {
-    console.log(`Server start at ${SERVER_HOST}`);
-  }
+  console.log(`Server start at ${SERVER_HOST}`);
 });
