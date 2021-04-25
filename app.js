@@ -58,13 +58,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
 
-app.use(
-  cors({
-    origin: true,
-    exposedHeaders: ['last-page'],
-    credentials: true,
-  }),
-);
+if (NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: `${HOST}:3000`,
+      exposedHeaders: ['last-page'],
+      credentials: true,
+    }),
+  );
+} else if (NODE_ENV === 'production') {
+  app.use(
+    cors({
+      origin: 'https:p-levelup.com',
+      exposedHeaders: ['last-page'],
+      credentials: true,
+    }),
+  );
+}
+
 app.use(passport.initialize());
 app.use(jwtMiddleware);
 
