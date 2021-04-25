@@ -112,3 +112,6 @@ package-lock.json
 yarn.lock
 
 uploads/
+
+#s3키
+rootkey.csv
