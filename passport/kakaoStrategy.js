@@ -10,8 +10,6 @@ export default function PassPortKakaoStrategy() {
         callbackURL: '/api/main/auth/login/kakao/callback',
       },
       async (accessToken, refreshToken, profile, done) => {
-        console.log('kakao profile', profile);
-        console.log('kakao', accessToken);
         try {
           const exUser = await User.findOne({
             where: { snsId: profile.id, type: 'kakao' },

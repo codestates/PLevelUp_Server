@@ -3,10 +3,10 @@ import User from '../../models/user';
 import Club from '../../models/club';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
 import { generateToken } from '../../common/utils';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { CLIENT_HOST } from '../../app';
 dotenv.config();
 
 export default {
@@ -50,7 +50,6 @@ export default {
         return res
           .cookie('access_token', access_token, {
             maxAge: 1000 * 60 * 60 * 24 * 1,
-            httpOnly: true,
           })
           .status(200)
           .json(data);
@@ -75,7 +74,6 @@ export default {
         return res
           .cookie('access_token', access_token, {
             maxAge: 1000 * 60 * 60 * 24 * 1,
-            httpOnly: true,
           })
           .status(200)
           .json(data);
@@ -89,21 +87,21 @@ export default {
         if (error) {
           next(error);
         }
+
         const access_token = generateToken(
-          user.snsId,
+          user.id,
           user.email,
-          user.displayName,
+          user.username,
           user.type,
         );
 
-        const data = user.serialize();
+        // const data = user.serialize();
         return res
           .cookie('access_token', access_token, {
             maxAge: 1000 * 60 * 60 * 24 * 1,
-            httpOnly: true,
           })
           .status(200)
-          .json(data);
+          .redirect(`${CLIENT_HOST}/login`);
       });
     })(req, res, next);
   },
@@ -118,19 +116,20 @@ export default {
             next(error);
           }
           const access_token = generateToken(
-            user.snsId,
+            user.id,
             user.email,
-            user.displayName,
+            user.username,
             user.type,
           );
-          const data = user.serialize();
+          // const data = user.serialize();
           return res
             .cookie('access_token', access_token, {
               maxAge: 1000 * 60 * 60 * 24 * 1,
-              httpOnly: true,
             })
             .status(200)
-            .json(data);
+            .redirect(`${CLIENT_HOST}/login`);
+          // .send('');
+          // .json(data);
         });
       },
     )(req, res, next);
@@ -181,7 +180,6 @@ export default {
       const token = user.generateToken();
       res.cookie('access_token', token, {
         maxAge: 1000 * 60 * 60 * 24 * 1,
-        httpOnly: true,
       });
       res.status(200).send(data);
     } catch (e) {
