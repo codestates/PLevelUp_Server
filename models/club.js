@@ -40,6 +40,7 @@ export default class Club extends Sequelize.Model {
   static associate(db) {
     db.Club.belongsTo(db.Master);
     db.Club.hasMany(db.sequelize.models.Bookmark);
+    db.Club.hasMany(db.sequelize.models.Apply);
     db.sequelize.models.Bookmark.belongsTo(db.Club);
     db.Club.belongsToMany(db.User, {
       through: 'Apply',
