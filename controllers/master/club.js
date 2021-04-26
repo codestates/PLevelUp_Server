@@ -154,6 +154,11 @@ export default {
           model: Master,
           attributes: ['id', 'email', 'username'],
         },
+        {
+          model: Apply,
+          attributes: ['UserId'],
+          required: false,
+        },
       ],
       where: { MasterId: master.id },
     };
@@ -167,27 +172,25 @@ export default {
       const data = clubs
         .map(club => club.toJSON())
         .map(club => {
-          const currentUserNumber = Apply.count({
-            where: { ClubId: club.id },
-          });
-
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
             isOnline: club.place === '온라인',
             isNew: checkDateVsNow(club.createdAt, true) < 7,
             isMostStart:
-              0 < checkDateVsNow(club.startDate, false) < 7 ||
-              club.limitUserNumber <= currentUserNumber + 3,
+              (0 < checkDateVsNow(club.startDate, false) &&
+                checkDateVsNow(club.startDate, false) < 7) ||
+              club.limitUserNumber <= club.currentUserNumber + 3,
             isStart:
               (checkDateVsNow(club.startDate, false) < 0 &&
                 !checkEnd(club.startDate, club.times)) ||
-              club.limitUserNumber <= currentUserNumber,
+              club.limitUserNumber <= club.currentUserNumber,
             isEnd: checkEnd(club.startDate, club.times),
             isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
         .map(club => {
+          delete club.ApplyUser;
           if (club.isStart && club.isMostStart) {
             club.isMostStart = false;
           }
