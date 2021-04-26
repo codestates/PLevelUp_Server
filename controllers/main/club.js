@@ -235,6 +235,11 @@ export default {
               UserId: userId,
             },
           },
+          {
+            model: Apply,
+            attributes: ['UserId'],
+            required: false,
+          },
         ],
       });
 
@@ -259,11 +264,14 @@ export default {
             isStart: checkDateVsNow(club.startDate, false) < 0,
             isEnd: checkEnd(club.startDate, club.times),
             isFourLimitNumber: club.limitUserNumber === 4,
-            currentUserNumber: club.currentUserNumber,
           };
         })
         .map(club => {
           delete club.Bookmarked;
+          delete club.ApplyUser;
+          if (club.isStart && club.isMostStart) {
+            club.isMostStart = false;
+          }
           return club;
         });
 
