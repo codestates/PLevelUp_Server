@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import Club from '../../models/club';
 import { checkDateVsNow, checkEnd, deepCopy } from '../../common/utils';
 import { sequelize } from '../../models';
+
 const { Bookmark } = sequelize.models;
 const { Apply } = sequelize.models;
 
@@ -34,6 +35,11 @@ export default {
           where: {
             UserId: userId,
           },
+        },
+        {
+          model: Apply,
+          attributes: ['UserId'],
+          required: false,
         },
       ],
     };
@@ -73,27 +79,32 @@ export default {
         clubs
           .map(club => club.toJSON())
           .map(club => {
-            const currentUserNumber = Apply.count({
-              where: { ClubId: club.id },
-            });
+            return {
+              ...club,
+              currentUserNumber: club.ApplyUser.length,
+            };
+          })
+          .map(club => {
             return {
               ...club,
               isBookmark: club.Bookmarked.length === 1,
               isOnline: club.place === '온라인',
               isNew: checkDateVsNow(club.createdAt, true) < 7,
               isMostStart:
-                0 < checkDateVsNow(club.startDate, false) < 7 ||
-                club.limitUserNumber <= currentUserNumber + 3,
+                (0 < checkDateVsNow(club.startDate, false) &&
+                  checkDateVsNow(club.startDate, false) < 7) ||
+                club.limitUserNumber <= club.currentUserNumber + 3,
               isStart:
                 (checkDateVsNow(club.startDate, false) < 0 &&
                   !checkEnd(club.startDate, club.times)) ||
-                club.limitUserNumber <= currentUserNumber,
+                club.limitUserNumber <= club.currentUserNumber,
               isEnd: checkEnd(club.startDate, club.times),
               isFourLimitNumber: club.limitUserNumber === 4,
             };
           })
           .map(club => {
             delete club.Bookmarked;
+            delete club.ApplyUser;
             delete club.description;
             if (club.isStart && club.isMostStart) {
               club.isMostStart = false;

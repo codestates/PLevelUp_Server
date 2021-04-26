@@ -6,6 +6,7 @@ import axios from 'axios';
 import { Op } from 'sequelize';
 import { sequelize } from '../../models';
 import { checkDateVsNow, checkEnd, clubListEllipsis } from '../../common/utils';
+
 const { Bookmark } = sequelize.models;
 const { Apply } = sequelize.models;
 // html을 없애고 내용이 너무 길면 limit으로 제한하는 함수 (limit -1 일 경우 제한 x)
@@ -38,6 +39,11 @@ export default {
           where: {
             UserId: userId,
           },
+        },
+        {
+          model: Apply,
+          attributes: ['UserId'],
+          required: false,
         },
       ],
     };
@@ -89,10 +95,12 @@ export default {
       const data = clubs
         .map(club => club.toJSON())
         .map(club => {
-          const currentUserNumber = Apply.count({
-            where: { ClubId: club.id },
-          });
-
+          return {
+            ...club,
+            currentUserNumber: club.ApplyUser.length,
+          };
+        })
+        .map(club => {
           return {
             ...club,
             description: clubListEllipsis(club.description, -1),
@@ -101,17 +109,18 @@ export default {
             isNew: checkDateVsNow(club.createdAt, true) < 7,
             isMostStart:
               0 < checkDateVsNow(club.startDate, false) < 7 ||
-              club.limitUserNumber <= currentUserNumber + 3,
+              club.limitUserNumber <= club.currentUserNumber + 3,
             isStart:
               (checkDateVsNow(club.startDate, false) < 0 &&
                 !checkEnd(club.startDate, club.times)) ||
-              club.limitUserNumber <= currentUserNumber,
+              club.limitUserNumber <= club.currentUserNumber,
             isEnd: checkEnd(club.startDate, club.times),
             isFourLimitNumber: club.limitUserNumber === 4,
           };
         })
         .map(club => {
           delete club.Bookmarked;
+          delete club.ApplyUser;
           if (club.isStart && club.isMostStart) {
             club.isMostStart = false;
           }
