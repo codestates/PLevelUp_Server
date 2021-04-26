@@ -241,6 +241,12 @@ export default {
         .map(club => {
           return {
             ...club,
+            currentUserNumber: club.ApplyUser.length,
+          };
+        })
+        .map(club => {
+          return {
+            ...club,
             description: clubListEllipsis(club.description, -1),
             isBookmark: club.Bookmarked.length === 1,
             isOnline: club.place === '온라인',
